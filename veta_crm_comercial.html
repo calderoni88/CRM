@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Comercial — VetaCap</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f4;
+    --bg-tertiary: #f0efed;
+    --bg-info: #e6f1fb;
+    --bg-success: #eaf3de;
+    --bg-warning: #faeeda;
+    --bg-danger: #fcebeb;
+    --text-primary: #1a1a18;
+    --text-secondary: #5f5e5a;
+    --text-tertiary: #888780;
+    --text-info: #0c447c;
+    --text-success: #27500a;
+    --text-warning: #633806;
+    --text-danger: #791f1f;
+    --border-light: rgba(0,0,0,0.10);
+    --border-mid: rgba(0,0,0,0.18);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1c1c1a;
+      --bg-secondary: #242422;
+      --bg-tertiary: #2c2c2a;
+      --bg-info: #042c53;
+      --bg-success: #173404;
+      --bg-warning: #412402;
+      --bg-danger: #501313;
+      --text-primary: #f0efed;
+      --text-secondary: #b4b2a9;
+      --text-tertiary: #888780;
+      --text-info: #b5d4f4;
+      --text-success: #c0dd97;
+      --text-warning: #fac775;
+      --text-danger: #f7c1c1;
+      --border-light: rgba(255,255,255,0.08);
+      --border-mid: rgba(255,255,255,0.15);
+    }
+  }
+  body { font-family: var(--font); background: var(--bg-tertiary); color: var(--text-primary); height: 100vh; overflow: hidden; }
+  .app { display: flex; height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: 220px; min-width: 220px; background: var(--bg-primary); border-right: 0.5px solid var(--border-light); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 16px; border-bottom: 0.5px solid var(--border-light); }
+  .sidebar-logo span { font-size: 11px; font-weight: 500; color: var(--text-tertiary); letter-spacing: 0.06em; text-transform: uppercase; }
+  .sidebar-logo strong { display: block; font-size: 15px; font-weight: 500; color: var(--text-primary); margin-top: 2px; }
+  .sidebar-nav { padding: 8px; flex: 1; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius-md); cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: background 0.12s; margin-bottom: 2px; user-select: none; }
+  .nav-item:hover { background: var(--bg-secondary); color: var(--text-primary); }
+  .nav-item.active { background: var(--bg-secondary); color: var(--text-primary); font-weight: 500; }
+  .nav-item i { font-size: 16px; }
+  .badge { margin-left: auto; background: var(--bg-info); color: var(--text-info); font-size: 11px; padding: 1px 7px; border-radius: 20px; font-weight: 500; }
+  .sidebar-footer { padding: 12px 16px; border-top: 0.5px solid var(--border-light); }
+  .sidebar-footer .sf-label { font-size: 11px; color: var(--text-tertiary); }
+  .sidebar-footer .sf-value { font-size: 13px; font-weight: 500; margin-top: 2px; color: var(--text-primary); }
+
+  /* Main */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { background: var(--bg-primary); border-bottom: 0.5px solid var(--border-light); padding: 12px 20px; display: flex; align-items: center; gap: 10px; }
+  .topbar h1 { font-size: 15px; font-weight: 500; flex: 1; }
+  .content { flex: 1; overflow-y: auto; padding: 16px 20px; }
+
+  /* Buttons */
+  .btn { background: transparent; border: 0.5px solid var(--border-mid); border-radius: var(--radius-md); padding: 6px 12px; font-size: 12px; cursor: pointer; color: var(--text-primary); display: inline-flex; align-items: center; gap: 6px; font-family: var(--font); transition: background 0.12s; }
+  .btn:hover { background: var(--bg-secondary); }
+  .btn:active { transform: scale(0.98); }
+  .btn.primary { background: var(--bg-info); color: var(--text-info); border-color: transparent; }
+  .btn.primary:hover { opacity: 0.85; }
+  .btn.sm { padding: 4px 8px; font-size: 11px; }
+
+  /* Metrics */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  .metric { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 12px 14px; }
+  .metric .m-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  .metric .m-value { font-size: 22px; font-weight: 500; }
+
+  /* Filters */
+  .filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .filter-chip { padding: 4px 10px; border-radius: 20px; font-size: 12px; border: 0.5px solid var(--border-light); cursor: pointer; background: transparent; color: var(--text-secondary); font-family: var(--font); transition: all 0.1s; }
+  .filter-chip:hover { border-color: var(--border-mid); color: var(--text-primary); }
+  .filter-chip.active { background: var(--bg-primary); border-color: var(--border-mid); color: var(--text-primary); font-weight: 500; }
+
+  /* Table */
+  .table-wrap { background: var(--bg-primary); border-radius: var(--radius-lg); border: 0.5px solid var(--border-light); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 500; color: var(--text-secondary); border-bottom: 0.5px solid var(--border-light); letter-spacing: 0.03em; }
+  td { padding: 10px 14px; border-bottom: 0.5px solid var(--border-light); color: var(--text-primary); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-secondary); }
+
+  /* Pills */
+  .status-pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+  .s-pendiente { background: var(--bg-warning); color: var(--text-warning); }
+  .s-contactado { background: var(--bg-info); color: var(--text-info); }
+  .s-respondio { background: var(--bg-success); color: var(--text-success); }
+  .s-cerrado { background: var(--bg-secondary); color: var(--text-secondary); }
+  .seg-pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; }
+  .seg-top { background: #FAEEDA; color: #633806; }
+  .seg-activo { background: #EAF3DE; color: #27500A; }
+  .seg-dormido { background: #FCEBEB; color: #791F1F; }
+  .seg-sinflat { background: #E6F1FB; color: #0C447C; }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 56px 24px; color: var(--text-secondary); font-size: 13px; }
+  .empty-state i { font-size: 36px; display: block; margin-bottom: 10px; color: var(--text-tertiary); }
+
+  /* Panel lateral */
+  .panel { position: fixed; top: 0; right: 0; width: 420px; height: 100vh; background: var(--bg-primary); border-left: 0.5px solid var(--border-light); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.2s ease; z-index: 100; box-shadow: -4px 0 24px rgba(0,0,0,0.06); }
+  .panel.open { transform: translateX(0); }
+  .panel-header { padding: 16px; border-bottom: 0.5px solid var(--border-light); display: flex; align-items: center; gap: 8px; }
+  .panel-header h3 { font-size: 14px; font-weight: 500; flex: 1; }
+  .panel-body { flex: 1; overflow-y: auto; padding: 16px; }
+  .panel-footer { padding: 14px 16px; border-top: 0.5px solid var(--border-light); display: flex; gap: 8px; }
+
+  /* Form fields */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
+  select, textarea, input[type="text"], input[type="number"] {
+    width: 100%; font-size: 13px; font-family: var(--font);
+    background: var(--bg-primary); color: var(--text-primary);
+    border: 0.5px solid var(--border-mid); border-radius: var(--radius-md);
+    padding: 7px 10px; outline: none; transition: border-color 0.12s;
+  }
+  select:focus, textarea:focus, input:focus { border-color: var(--text-secondary); }
+  textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+
+  /* Message preview */
+  .msg-box { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 12px; font-size: 13px; line-height: 1.65; color: var(--text-primary); white-space: pre-wrap; border: 0.5px solid var(--border-light); }
+
+  /* Import area */
+  .import-area { border: 1px dashed var(--border-mid); border-radius: var(--radius-lg); padding: 36px 24px; text-align: center; cursor: pointer; color: var(--text-secondary); font-size: 13px; transition: background 0.12s; }
+  .import-area:hover { background: var(--bg-secondary); }
+  .import-area i { font-size: 36px; display: block; margin-bottom: 10px; color: var(--text-tertiary); }
+  .divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; }
+  .divider span { font-size: 12px; color: var(--text-tertiary); white-space: nowrap; }
+  .divider::before, .divider::after { content:''; flex:1; height: 0.5px; background: var(--border-light); }
+
+  /* Template cards */
+  .tpl-card { background: var(--bg-primary); border: 0.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; }
+  .tpl-card .tpl-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .tpl-card .tpl-seg { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
+  .tpl-card .tpl-preview { font-size: 12px; color: var(--text-secondary); white-space: pre-wrap; line-height: 1.5; background: var(--bg-secondary); border-radius: var(--radius-md); padding: 10px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 20px; right: 20px; background: var(--text-primary); color: var(--bg-primary); font-size: 13px; padding: 10px 16px; border-radius: var(--radius-md); opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none; z-index: 200; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <span>VetaCap</span>
+      <strong>CRM Comercial</strong>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" id="nav-pipeline" onclick="showView('pipeline')">
+        <i class="ti ti-layout-kanban"></i> Pipeline
+        <span class="badge" id="badge-total">0</span>
+      </div>
+      <div class="nav-item" id="nav-import" onclick="showView('import')">
+        <i class="ti ti-upload"></i> Importar clientes
+      </div>
+      <div class="nav-item" id="nav-templates" onclick="showView('templates')">
+        <i class="ti ti-template"></i> Plantillas
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sf-label">Campaña activa</div>
+      <div class="sf-value" id="campaign-label">—</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <h1 id="view-title">Pipeline de contactos</h1>
+      <button class="btn" onclick="exportCSV()"><i class="ti ti-download"></i> Exportar CSV</button>
+      <button class="btn primary" onclick="showView('import')"><i class="ti ti-plus"></i> Nuevo cliente</button>
+    </div>
+
+    <div class="content">
+
+      <!-- PIPELINE -->
+      <div id="view-pipeline">
+        <div class="metrics">
+          <div class="metric"><div class="m-label">Total clientes</div><div class="m-value" id="m-total">0</div></div>
+          <div class="metric"><div class="m-label">Pendientes</div><div class="m-value" id="m-pending">0</div></div>
+          <div class="metric"><div class="m-label">Contactados</div><div class="m-value" id="m-sent">0</div></div>
+          <div class="metric"><div class="m-label">Respondieron</div><div class="m-value" id="m-replied">0</div></div>
+        </div>
+        <div class="filters">
+          <button class="filter-chip active" onclick="setFilter('todos',this)">Todos</button>
+          <button class="filter-chip" onclick="setFilter('pendiente',this)">Pendiente</button>
+          <button class="filter-chip" onclick="setFilter('contactado',this)">Contactado</button>
+          <button class="filter-chip" onclick="setFilter('respondio',this)">Respondió</button>
+          <button class="filter-chip" onclick="setFilter('cerrado',this)">Cerrado</button>
+          <button class="filter-chip" onclick="setFilter('top',this)">Top</button>
+          <button class="filter-chip" onclick="setFilter('activo',this)">Activo</button>
+          <button class="filter-chip" onclick="setFilter('dormido',this)">Dormido</button>
+          <button class="filter-chip" onclick="setFilter('sinflat',this)">Sin flat</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Segmento</th>
+                <th>Aranceles est.</th>
+                <th>Último contacto</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="client-table"></tbody>
+          </table>
+          <div id="empty-state" class="empty-state" style="display:none;">
+            <i class="ti ti-users"></i>
+            No hay clientes todavía.<br>Importá un CSV o agregá uno manualmente.
+          </div>
+        </div>
+      </div>
+
+      <!-- IMPORT -->
+      <div id="view-import" style="display:none; max-width:540px;">
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px; line-height:1.6;">
+          Importá un CSV con columnas: <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">nombre</code>,
+          <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">segmento</code>,
+          <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">aranceles</code>,
+          <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">plan_flat</code>.
+          El segmento puede ser: <em>top, activo, dormido, sinflat</em>.
+        </p>
+        <div class="import-area" onclick="document.getElementById('csv-input').click()">
+          <i class="ti ti-file-spreadsheet"></i>
+          Hacé clic o arrastrá un CSV aquí
+        </div>
+        <input type="file" id="csv-input" accept=".csv" style="display:none" onchange="handleCSV(event)">
+
+        <div class="divider"><span>o agregá manualmente</span></div>
+
+        <div style="display:grid; gap:10px;">
+          <div class="field"><label>Nombre completo</label><input type="text" id="mn-nombre" placeholder="Ej: Juan García"></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="field"><label>Segmento</label>
+              <select id="mn-seg">
+                <option value="top">Top cliente</option>
+                <option value="activo">Activo</option>
+                <option value="dormido">Dormido</option>
+                <option value="sinflat">Sin flat</option>
+              </select>
+            </div>
+            <div class="field"><label>Plan flat activo</label>
+              <select id="mn-flat"><option value="no">No</option><option value="si">Sí</option></select>
+            </div>
+          </div>
+          <div class="field"><label>Aranceles estimados ($/mes)</label><input type="number" id="mn-aran" placeholder="Ej: 45000"></div>
+          <button class="btn primary" onclick="addManual()" style="width:fit-content;"><i class="ti ti-plus"></i> Agregar cliente</button>
+        </div>
+      </div>
+
+      <!-- TEMPLATES -->
+      <div id="view-templates" style="display:none; max-width:640px;">
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
+          Plantillas precargadas. Usá <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">[Nombre]</code> y
+          <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">[X]</code> como variables — se completan automáticamente al gestionar un cliente.
+        </p>
+        <div id="templates-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Panel lateral -->
+<div class="panel" id="detail-panel">
+  <div class="panel-header">
+    <h3 id="panel-name">—</h3>
+    <span id="panel-seg" style="font-size:12px; color:var(--text-secondary);"></span>
+    <button class="btn sm" onclick="closePanel()" style="margin-left:auto;"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="panel-body">
+    <div class="field">
+      <label>Plantilla de mensaje</label>
+      <select id="template-select" onchange="previewMsg()"></select>
+    </div>
+    <div class="field">
+      <label>Vista previa del mensaje</label>
+      <div class="msg-box" id="msg-preview"></div>
+      <button class="btn sm" onclick="copyMsg()" style="margin-top:6px;"><i class="ti ti-copy"></i> Copiar mensaje</button>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px;">
+      <div class="field">
+        <label>Estado</label>
+        <select id="status-select" onchange="updateStatus()">
+          <option value="pendiente">Pendiente</option>
+          <option value="contactado">Contactado</option>
+          <option value="respondio">Respondió</option>
+          <option value="cerrado">Cerrado</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Aranceles est. ($)</label>
+        <input type="number" id="panel-aran" onblur="saveAran()" placeholder="45000">
+      </div>
+    </div>
+    <div class="field">
+      <label>Notas / feedback del cliente</label>
+      <textarea id="notes-area" placeholder="Anotá aquí lo que te dijo el cliente, objeciones, intereses..." onblur="saveNote()"></textarea>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <button class="btn" onclick="markStatus('contactado')"><i class="ti ti-check"></i> Marcar contactado</button>
+    <button class="btn" onclick="markStatus('respondio')"><i class="ti ti-message-check"></i> Respondió</button>
+    <button class="btn" onclick="markStatus('cerrado')" style="margin-left:auto;"><i class="ti ti-lock"></i> Cerrar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var clients = [];
+var currentFilter = 'todos';
+var currentClient = null;
+
+var templates = [
+  {
+    id: 'flat-oferta',
+    name: 'Oferta Plan Flat (sin flat activo)',
+    segmentos: ['sinflat'],
+    texto: 'Hola [Nombre],\n\nTe escribo porque estuve revisando tu cuenta y quería contarte algo que puede ser relevante para vos.\n\nBasándome en tus operaciones de los últimos meses, estimamos que estás pagando aproximadamente $[X] en aranceles al 0.15% en BYMA. Con el PLAN FLAT, todas esas operaciones serían sin comisión.\n\nAdemás del ahorro en aranceles, el plan te da acceso a descubierto y a operar cauciones, lo que amplía bastante las posibilidades de cada operación.\n\nPara que lo puedas probar sin compromiso, te queremos ofrecer un mes gratis. Si operás con cierta frecuencia, el plan se paga solo. Tenemos tres opciones según tu nivel de actividad:\n\nFLAT START | $85.000 + IVA | Descubierto 150%\nFLAT ADVANCE | $160.000 + IVA | Descubierto 230%\nFLAT ELITE | $285.000 + IVA | Descubierto 320%\n\n¿Arrancamos con el mes de prueba?'
+  },
+  {
+    id: 'top-reconocimiento',
+    name: 'Reconocimiento top cliente (mes gratis)',
+    segmentos: ['top'],
+    texto: 'Buenas [Nombre],\n\nTe escribo personalmente porque quería agradecerte. Tu confianza en VetaCap no es un número para nosotros, y me parece importante que lo sepas.\n\nComo reconocimiento, te sumamos un mes de FLAT sin costo. Ya está aplicado, no tenés que hacer nada.\n\nPero más allá del regalo, quería preguntarte con sinceridad: ¿Hay algo que sientas que podemos mejorar? ¿Algo que te genere fricción, que te falte, o que creas que podríamos hacer mejor para vos?\n\nEstoy disponible para una llamada, un mensaje, lo que te sea más cómodo.\n\n¡Quedo a disposición!'
+  },
+  {
+    id: 'activo-reconocimiento',
+    name: 'Reconocimiento cliente activo (15 días gratis)',
+    segmentos: ['activo'],
+    texto: 'Buenas [Nombre],\n\nTe escribo para agradecerte. Venís operando con consistencia y eso no pasa desapercibido.\n\nComo reconocimiento, te sumamos 15 días de FLAT sin costo para que lo pruebes con tus propias operaciones. Ya está aplicado.\n\nY aprovecho para preguntarte: ¿hay algo que podamos mejorar de tu lado? Cualquier comentario nos sirve, lo tomamos en serio.\n\n¡Quedo disponible para lo que necesites!'
+  },
+  {
+    id: 'reactivacion',
+    name: 'Reactivación cliente dormido',
+    segmentos: ['dormido'],
+    texto: 'Hola [Nombre], ¿cómo estás?\n\nHacía un tiempo que no operabas y quería escribirte para ver cómo te puedo ayudar.\n\nSi hay algo que te frenó —operatoria, dudas, o simplemente el momento— me contás y lo vemos juntos.\n\nEstoy a disposición cuando quieras.'
+  },
+  {
+    id: 'remocion-flat',
+    name: 'Remoción grupo VETA FLAT',
+    segmentos: ['sinflat'],
+    texto: 'Hola [Nombre], ¿cómo estás?\n\nTe escribo porque estamos haciendo una actualización del grupo de WhatsApp "VETA FLAT" y, al revisar las cuentas, vemos que tu plan ya no está activo. Por ese motivo vamos a tener que removerte del grupo — ¡disculpas por las molestias!\n\nAprovecho para contarte algo que puede ser relevante para vos.\n\nBasándome en tus operaciones de los últimos meses, estimamos que estás pagando aproximadamente $[X] en aranceles al 0.15% en BYMA. Con el PLAN FLAT, todas esas operaciones serían sin comisión.\n\nPara que lo puedas probar sin compromiso, te queremos ofrecer un mes gratis. Tenemos tres opciones:\n\nFLAT START | $85.000 + IVA\nFLAT ADVANCE | $160.000 + IVA\nFLAT ELITE | $285.000 + IVA\n\n¿Arrancamos con el mes de prueba?'
+  }
+];
+
+function segLabel(s) {
+  var map = { top: 'seg-top', activo: 'seg-activo', dormido: 'seg-dormido', sinflat: 'seg-sinflat' };
+  var labels = { top: 'Top', activo: 'Activo', dormido: 'Dormido', sinflat: 'Sin flat' };
+  return '<span class="seg-pill ' + (map[s]||'') + '">' + (labels[s]||s||'—') + '</span>';
+}
+
+function statusPill(s) {
+  var map = { pendiente: 's-pendiente', contactado: 's-contactado', respondio: 's-respondio', cerrado: 's-cerrado' };
+  var labels = { pendiente: 'Pendiente', contactado: 'Contactado', respondio: 'Respondió', cerrado: 'Cerrado' };
+  return '<span class="status-pill ' + (map[s]||'s-pendiente') + '">' + (labels[s]||'Pendiente') + '</span>';
+}
+
+function renderTable() {
+  var filtered = clients.filter(function(c) {
+    if (currentFilter === 'todos') return true;
+    if (['pendiente','contactado','respondio','cerrado'].indexOf(currentFilter) > -1) return c.estado === currentFilter;
+    return c.segmento === currentFilter;
+  });
+  var tbody = document.getElementById('client-table');
+  var empty = document.getElementById('empty-state');
+  if (clients.length === 0) { tbody.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = filtered.map(function(c) {
+    var idx = clients.indexOf(c);
+    var aran = c.aranceles ? '$' + Number(c.aranceles).toLocaleString('es-AR') : '—';
+    return '<tr>' +
+      '<td style="font-weight:500">' + c.nombre + '</td>' +
+      '<td>' + segLabel(c.segmento) + '</td>' +
+      '<td>' + aran + '</td>' +
+      '<td style="color:var(--text-secondary); font-size:12px;">' + (c.ultimo_contacto || '—') + '</td>' +
+      '<td>' + statusPill(c.estado) + '</td>' +
+      '<td><button class="btn sm" onclick="openPanel(' + idx + ')"><i class="ti ti-message"></i> Gestionar</button></td>' +
+    '</tr>';
+  }).join('');
+  updateMetrics();
+}
+
+function updateMetrics() {
+  document.getElementById('m-total').textContent = clients.length;
+  document.getElementById('m-pending').textContent = clients.filter(function(c){return c.estado==='pendiente';}).length;
+  document.getElementById('m-sent').textContent = clients.filter(function(c){return c.estado==='contactado';}).length;
+  document.getElementById('m-replied').textContent = clients.filter(function(c){return c.estado==='respondio';}).length;
+  document.getElementById('badge-total').textContent = clients.length;
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(function(x){x.classList.remove('active');});
+  el.classList.add('active');
+  renderTable();
+}
+
+function openPanel(idx) {
+  currentClient = idx;
+  var c = clients[idx];
+  document.getElementById('panel-name').textContent = c.nombre;
+  document.getElementById('panel-seg').textContent = { top:'Top cliente', activo:'Activo', dormido:'Dormido', sinflat:'Sin flat' }[c.segmento] || '';
+  document.getElementById('panel-aran').value = c.aranceles || '';
+
+  var sel = document.getElementById('template-select');
+  sel.innerHTML = templates.map(function(t){
+    return '<option value="' + t.id + '">' + t.name + '</option>';
+  }).join('');
+  var suggested = templates.findIndex(function(t){ return t.segmentos.indexOf(c.segmento) > -1; });
+  if (suggested > -1) sel.selectedIndex = suggested;
+
+  previewMsg();
+  document.getElementById('status-select').value = c.estado || 'pendiente';
+  document.getElementById('notes-area').value = c.notas || '';
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function closePanel() { document.getElementById('detail-panel').classList.remove('open'); }
+
+function previewMsg() {
+  if (currentClient === null) return;
+  var c = clients[currentClient];
+  var tid = document.getElementById('template-select').value;
+  var tpl = templates.find(function(t){return t.id === tid;});
+  if (!tpl) return;
+  var aran = c.aranceles ? Number(c.aranceles).toLocaleString('es-AR') : '[X]';
+  var msg = tpl.texto.replace(/\[Nombre\]/g, c.nombre).replace(/\[X\]/g, aran);
+  document.getElementById('msg-preview').textContent = msg;
+}
+
+function copyMsg() {
+  var text = document.getElementById('msg-preview').textContent;
+  navigator.clipboard.writeText(text).then(function(){
+    showToast('Mensaje copiado');
+  }).catch(function(){
+    showToast('No se pudo copiar automáticamente');
+  });
+}
+
+function updateStatus() {
+  if (currentClient === null) return;
+  var s = document.getElementById('status-select').value;
+  clients[currentClient].estado = s;
+  if (s === 'contactado') clients[currentClient].ultimo_contacto = new Date().toLocaleDateString('es-AR');
+  renderTable();
+}
+
+function saveNote() {
+  if (currentClient === null) return;
+  clients[currentClient].notas = document.getElementById('notes-area').value;
+}
+
+function saveAran() {
+  if (currentClient === null) return;
+  clients[currentClient].aranceles = document.getElementById('panel-aran').value;
+  previewMsg();
+  renderTable();
+}
+
+function markStatus(s) {
+  if (currentClient === null) return;
+  clients[currentClient].estado = s;
+  if (s === 'contactado') clients[currentClient].ultimo_contacto = new Date().toLocaleDateString('es-AR');
+  document.getElementById('status-select').value = s;
+  renderTable();
+  showToast({ contactado: 'Marcado como contactado', respondio: 'Marcado como respondió', cerrado: 'Cerrado' }[s] || '');
+}
+
+function showView(v) {
+  ['pipeline','import','templates'].forEach(function(x){
+    document.getElementById('view-'+x).style.display = 'none';
+  });
+  document.getElementById('view-'+v).style.display = '';
+  var titles = { pipeline: 'Pipeline de contactos', import: 'Importar clientes', templates: 'Plantillas de mensajes' };
+  document.getElementById('view-title').textContent = titles[v];
+  ['pipeline','import','templates'].forEach(function(x){
+    document.getElementById('nav-'+x).classList.toggle('active', x===v);
+  });
+  if (v === 'templates') renderTemplates();
+}
+
+function renderTemplates() {
+  document.getElementById('templates-list').innerHTML = templates.map(function(t){
+    var preview = t.texto.length > 220 ? t.texto.substring(0,220) + '…' : t.texto;
+    return '<div class="tpl-card">' +
+      '<div class="tpl-name">' + t.name + '</div>' +
+      '<div class="tpl-seg">Segmentos: ' + t.segmentos.join(', ') + '</div>' +
+      '<div class="tpl-preview">' + preview + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function handleCSV(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var lines = ev.target.result.split('\n').filter(function(l){return l.trim();});
+    if (lines.length < 2) { showToast('CSV vacío o sin datos'); return; }
+    var headers = lines[0].split(',').map(function(h){return h.trim().toLowerCase().replace(/[^a-z_]/g,'');});
+    var added = 0;
+    for (var i = 1; i < lines.length; i++) {
+      var cols = lines[i].split(',');
+      var obj = { estado: 'pendiente', notas: '', ultimo_contacto: '' };
+      headers.forEach(function(h,j){ if(h) obj[h] = (cols[j]||'').trim().replace(/^"|"$/g,''); });
+      if (!obj.nombre) continue;
+      clients.push(obj);
+      added++;
+    }
+    document.getElementById('campaign-label').textContent = file.name.replace('.csv','');
+    showToast(added + ' clientes importados');
+    showView('pipeline');
+    renderTable();
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function addManual() {
+  var nombre = document.getElementById('mn-nombre').value.trim();
+  if (!nombre) { showToast('Ingresá un nombre'); return; }
+  clients.push({
+    nombre: nombre,
+    segmento: document.getElementById('mn-seg').value,
+    aranceles: document.getElementById('mn-aran').value || '',
+    plan_flat: document.getElementById('mn-flat').value,
+    estado: 'pendiente',
+    notas: '',
+    ultimo_contacto: ''
+  });
+  document.getElementById('mn-nombre').value = '';
+  document.getElementById('mn-aran').value = '';
+  showToast('Cliente agregado');
+  showView('pipeline');
+  renderTable();
+}
+
+function exportCSV() {
+  if (clients.length === 0) { showToast('No hay clientes para exportar'); return; }
+  var headers = ['nombre','segmento','aranceles','plan_flat','estado','ultimo_contacto','notas'];
+  var rows = clients.map(function(c){
+    return headers.map(function(h){ return '"' + (c[h]||'').toString().replace(/"/g,'""') + '"'; }).join(',');
+  });
+  var csv = '\uFEFF' + [headers.join(',')].concat(rows).join('\r\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'veta_crm_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  showToast('CSV exportado');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+renderTable();
+</script>
+</body>
+</html>
