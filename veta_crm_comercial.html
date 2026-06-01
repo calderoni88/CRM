@@ -519,26 +519,87 @@ function renderTemplates() {
 function handleCSV(e) {
   var file = e.target.files[0];
   if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    var lines = ev.target.result.split('\n').filter(function(l){return l.trim();});
+
+  function parseContent(raw) {
+    // Quitar BOM si existe
+    raw = raw.replace(/^\uFEFF/, '');
+    var lines = raw.split(/\r?\n/).filter(function(l){ return l.trim(); });
     if (lines.length < 2) { showToast('CSV vacío o sin datos'); return; }
-    var headers = lines[0].split(',').map(function(h){return h.trim().toLowerCase().replace(/[^a-z_]/g,'');});
+
+    // Auto-detectar separador: si la primera línea tiene más ";" que "," usamos ";"
+    var sep = (lines[0].split(';').length > lines[0].split(',').length) ? ';' : ',';
+
+    // Normalizar headers: minúsculas, sin tildes, sin caracteres raros
+    function normalizeKey(s) {
+      return s.trim().toLowerCase()
+        .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')
+        .replace(/[^a-z0-9_]/g,'');
+    }
+    var headers = lines[0].split(sep).map(normalizeKey);
+
+    // Normalizar valor de segmento
+    function normSeg(s) {
+      s = (s||'').toLowerCase().trim()
+        .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u');
+      if (s === 'sin flat' || s === 'sinflat' || s === 'sin_flat') return 'sinflat';
+      if (s === 'top' || s === 'top cliente' || s === 'top_cliente') return 'top';
+      if (s === 'activo') return 'activo';
+      if (s === 'dormido') return 'dormido';
+      return s || 'activo';
+    }
+
+    // Parsear fila respetando campos entre comillas que pueden contener el separador
+    function splitRow(line, sep) {
+      var cols = [], cur = '', inQ = false;
+      for (var i = 0; i < line.length; i++) {
+        var ch = line[i];
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === sep && !inQ) { cols.push(cur); cur = ''; }
+        else { cur += ch; }
+      }
+      cols.push(cur);
+      return cols.map(function(c){ return c.trim().replace(/^"|"$/g,''); });
+    }
+
     var added = 0;
     for (var i = 1; i < lines.length; i++) {
-      var cols = lines[i].split(',');
+      var cols = splitRow(lines[i], sep);
       var obj = { estado: 'pendiente', notas: '', ultimo_contacto: '' };
-      headers.forEach(function(h,j){ if(h) obj[h] = (cols[j]||'').trim().replace(/^"|"$/g,''); });
+      headers.forEach(function(h, j) {
+        if (h) obj[h] = (cols[j] || '').trim();
+      });
       if (!obj.nombre) continue;
+      obj.segmento = normSeg(obj.segmento);
+      // Limpiar aranceles: quedarse solo con dígitos
+      obj.aranceles = (obj.aranceles || '').replace(/[^0-9]/g, '');
       clients.push(obj);
       added++;
     }
+
+    if (added === 0) {
+      showToast('No se encontró la columna "nombre" — revisá el CSV');
+      return;
+    }
     document.getElementById('campaign-label').textContent = file.name.replace('.csv','');
-    showToast(added + ' clientes importados');
+    showToast(added + ' clientes importados (sep: "' + sep + '")');
     showView('pipeline');
     renderTable();
+  }
+
+  // Intentar UTF-8 primero; si hay caracteres corruptos, reintentar con latin-1
+  var r1 = new FileReader();
+  r1.onload = function(ev) {
+    var raw = ev.target.result;
+    // Heurística: si hay símbolos de reemplazo (U+FFFD) probamos latin-1
+    if (raw.indexOf('\uFFFD') > -1) {
+      var r2 = new FileReader();
+      r2.onload = function(ev2) { parseContent(ev2.target.result); };
+      r2.readAsText(file, 'windows-1252');
+    } else {
+      parseContent(raw);
+    }
   };
-  reader.readAsText(file, 'UTF-8');
+  r1.readAsText(file, 'UTF-8');
 }
 
 function addManual() {
