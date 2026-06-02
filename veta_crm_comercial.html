@@ -96,6 +96,11 @@
   .table-wrap { background: var(--bg-primary); border-radius: var(--radius-lg); border: 0.5px solid var(--border-light); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 500; color: var(--text-secondary); border-bottom: 0.5px solid var(--border-light); letter-spacing: 0.03em; }
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover { color: var(--text-primary); }
+  th.sortable::after { content: ' ⇅'; opacity: 0.3; font-size: 10px; }
+  th.sortable.asc::after { content: ' ↑'; opacity: 1; }
+  th.sortable.desc::after { content: ' ↓'; opacity: 1; }
   td { padding: 10px 14px; border-bottom: 0.5px solid var(--border-light); color: var(--text-primary); vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--bg-secondary); }
@@ -219,15 +224,15 @@
           <table>
             <thead>
               <tr>
-                <th>Cliente</th>
-                <th>Comitente</th>
-                <th>Segmento</th>
-                <th>Acción</th>
-                <th>Meses Flat</th>
-                <th>Último Flat</th>
-                <th>Aranceles est.</th>
-                <th>Último contacto</th>
-                <th>Estado</th>
+                <th class="sortable" onclick="sortBy('nombre')">Cliente</th>
+                <th class="sortable" onclick="sortBy('comitente')">Comitente</th>
+                <th class="sortable" onclick="sortBy('segmento')">Segmento</th>
+                <th class="sortable" onclick="sortBy('accion')">Acción</th>
+                <th class="sortable" onclick="sortBy('cantidadmesesflat')">Meses Flat</th>
+                <th class="sortable" onclick="sortBy('ultimoflatcontratado')">Último Flat</th>
+                <th class="sortable" onclick="sortBy('aranceles')">Aranceles est.</th>
+                <th class="sortable" onclick="sortBy('ultimo_contacto')">Último contacto</th>
+                <th class="sortable" onclick="sortBy('estado')">Estado</th>
                 <th></th>
               </tr>
             </thead>
@@ -361,6 +366,8 @@
 var clients = [];
 var currentFilter = 'todos';
 var currentClient = null;
+var sortCol = null;
+var sortDir = 1; // 1 asc, -1 desc
 
 var templates = [
   {
@@ -537,6 +544,35 @@ function markStatus(s) {
   document.getElementById('status-select').value = s;
   renderTable();
   showToast({ contactado: 'Marcado como contactado', respondio: 'Marcado como respondió', cerrado: 'Cerrado' }[s] || '');
+}
+
+function sortBy(col) {
+  if (sortCol === col) {
+    sortDir *= -1;
+  } else {
+    sortCol = col;
+    sortDir = 1;
+  }
+  clients.sort(function(a, b) {
+    var va = (a[col] || '').toString().toLowerCase();
+    var vb = (b[col] || '').toString().toLowerCase();
+    // Intentar comparación numérica para aranceles y meses
+    var na = parseFloat(va.replace(/[^0-9.]/g,''));
+    var nb = parseFloat(vb.replace(/[^0-9.]/g,''));
+    if (!isNaN(na) && !isNaN(nb)) return (na - nb) * sortDir;
+    if (va < vb) return -1 * sortDir;
+    if (va > vb) return 1 * sortDir;
+    return 0;
+  });
+  // Actualizar clases en headers
+  document.querySelectorAll('th.sortable').forEach(function(th) {
+    th.classList.remove('asc','desc');
+  });
+  var ths = document.querySelectorAll('th.sortable');
+  var cols = ['nombre','comitente','segmento','accion','cantidadmesesflat','ultimoflatcontratado','aranceles','ultimo_contacto','estado'];
+  var idx = cols.indexOf(col);
+  if (idx > -1 && ths[idx]) ths[idx].classList.add(sortDir === 1 ? 'asc' : 'desc');
+  renderTable();
 }
 
 function clearAll() {
