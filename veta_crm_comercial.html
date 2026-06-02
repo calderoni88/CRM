@@ -442,6 +442,7 @@ function renderTable() {
     '</tr>';
   }).join('');
   updateMetrics();
+  saveStorage();
 }
 
 function updateMetrics() {
@@ -523,11 +524,13 @@ function saveExtra() {
   c.ultimoflatcontratado = document.getElementById('panel-ultimoflat').value;
   c.aclaraciones = document.getElementById('panel-aclaraciones').value;
   renderTable();
+  saveStorage();
 }
 
 function saveNote() {
   if (currentClient === null) return;
   clients[currentClient].notas = document.getElementById('notes-area').value;
+  saveStorage();
 }
 
 function saveAran() {
@@ -535,6 +538,7 @@ function saveAran() {
   clients[currentClient].aranceles = document.getElementById('panel-aran').value;
   previewMsg();
   renderTable();
+  saveStorage();
 }
 
 function markStatus(s) {
@@ -656,6 +660,7 @@ function handleCSV(e) {
         'aranceles': 'aranceles',
         'planflat': 'plan_flat',
         'plan_flat': 'plan_flat',
+        'planflat': 'plan_flat',
       };
       return aliases[norm] || norm;
     }
@@ -766,6 +771,23 @@ function showToast(msg) {
   setTimeout(function(){ t.classList.remove('show'); }, 2200);
 }
 
+function saveStorage() {
+  try { localStorage.setItem('veta_crm_clients', JSON.stringify(clients));
+    if (document.getElementById('campaign-label').textContent !== '—')
+      localStorage.setItem('veta_crm_campaign', document.getElementById('campaign-label').textContent);
+  } catch(e) {}
+}
+
+function loadStorage() {
+  try {
+    var saved = localStorage.getItem('veta_crm_clients');
+    if (saved) { clients = JSON.parse(saved); }
+    var camp = localStorage.getItem('veta_crm_campaign');
+    if (camp) document.getElementById('campaign-label').textContent = camp;
+  } catch(e) {}
+}
+
+loadStorage();
 renderTable();
 </script>
 </body>
