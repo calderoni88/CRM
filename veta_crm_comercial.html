@@ -219,7 +219,11 @@
             <thead>
               <tr>
                 <th>Cliente</th>
+                <th>Comitente</th>
                 <th>Segmento</th>
+                <th>Acción</th>
+                <th>Meses Flat</th>
+                <th>Último Flat</th>
                 <th>Aranceles est.</th>
                 <th>Último contacto</th>
                 <th>Estado</th>
@@ -238,10 +242,7 @@
       <!-- IMPORT -->
       <div id="view-import" style="display:none; max-width:540px;">
         <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px; line-height:1.6;">
-          Importá un CSV con columnas: <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">nombre</code>,
-          <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">segmento</code>,
-          <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">aranceles</code>,
-          <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">plan_flat</code>.
+          Importá un CSV con columnas: <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">nombre</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">comitente</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">segmento</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">aranceles</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">plan_flat</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">cantidad meses flat</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">ultimo flat contratado</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">aclaraciones</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">acción</code>.
           El segmento puede ser: <em>top, activo, dormido, sinflat</em>.
         </p>
         <div class="import-area" onclick="document.getElementById('csv-input').click()">
@@ -316,6 +317,30 @@
         <label>Aranceles est. ($)</label>
         <input type="number" id="panel-aran" onblur="saveAran()" placeholder="45000">
       </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div class="field">
+        <label>Comitente</label>
+        <input type="text" id="panel-comitente" onblur="saveExtra()" placeholder="Ej: 12345">
+      </div>
+      <div class="field">
+        <label>Acción</label>
+        <input type="text" id="panel-accion" onblur="saveExtra()" placeholder="Ej: Ofrecer flat">
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div class="field">
+        <label>Meses con Flat</label>
+        <input type="text" id="panel-meses" onblur="saveExtra()" placeholder="Ej: 3">
+      </div>
+      <div class="field">
+        <label>Último Flat contratado</label>
+        <input type="text" id="panel-ultimoflat" onblur="saveExtra()" placeholder="Ej: marzo 2025">
+      </div>
+    </div>
+    <div class="field">
+      <label>Aclaraciones</label>
+      <input type="text" id="panel-aclaraciones" onblur="saveExtra()" placeholder="Ej: Cliente VIP, llamar por la tarde">
     </div>
     <div class="field">
       <label>Notas / feedback del cliente</label>
@@ -394,9 +419,14 @@ function renderTable() {
   tbody.innerHTML = filtered.map(function(c) {
     var idx = clients.indexOf(c);
     var aran = c.aranceles ? '$' + Number(c.aranceles).toLocaleString('es-AR') : '—';
+    var accionPill = c.accion ? '<span class="status-pill s-contactado" style="font-size:11px;">' + c.accion + '</span>' : '—';
     return '<tr>' +
       '<td style="font-weight:500">' + c.nombre + '</td>' +
+      '<td style="color:var(--text-secondary);font-size:12px;">' + (c.comitente || '—') + '</td>' +
       '<td>' + segLabel(c.segmento) + '</td>' +
+      '<td>' + accionPill + '</td>' +
+      '<td style="color:var(--text-secondary);font-size:12px;text-align:center;">' + (c.cantidadmesesflat || c.mesesflat || '—') + '</td>' +
+      '<td style="color:var(--text-secondary);font-size:12px;">' + (c.ultimoflatcontratado || c.ultimoflat || '—') + '</td>' +
       '<td>' + aran + '</td>' +
       '<td style="color:var(--text-secondary); font-size:12px;">' + (c.ultimo_contacto || '—') + '</td>' +
       '<td>' + statusPill(c.estado) + '</td>' +
@@ -438,6 +468,11 @@ function openPanel(idx) {
   previewMsg();
   document.getElementById('status-select').value = c.estado || 'pendiente';
   document.getElementById('notes-area').value = c.notas || '';
+  document.getElementById('panel-comitente').value = c.comitente || '';
+  document.getElementById('panel-accion').value = c.accion || '';
+  document.getElementById('panel-meses').value = c.cantidadmesesflat || c.mesesflat || '';
+  document.getElementById('panel-ultimoflat').value = c.ultimoflatcontratado || c.ultimoflat || '';
+  document.getElementById('panel-aclaraciones').value = c.aclaraciones || '';
   document.getElementById('detail-panel').classList.add('open');
 }
 
@@ -468,6 +503,17 @@ function updateStatus() {
   var s = document.getElementById('status-select').value;
   clients[currentClient].estado = s;
   if (s === 'contactado') clients[currentClient].ultimo_contacto = new Date().toLocaleDateString('es-AR');
+  renderTable();
+}
+
+function saveExtra() {
+  if (currentClient === null) return;
+  var c = clients[currentClient];
+  c.comitente = document.getElementById('panel-comitente').value;
+  c.accion = document.getElementById('panel-accion').value;
+  c.cantidadmesesflat = document.getElementById('panel-meses').value;
+  c.ultimoflatcontratado = document.getElementById('panel-ultimoflat').value;
+  c.aclaraciones = document.getElementById('panel-aclaraciones').value;
   renderTable();
 }
 
@@ -531,9 +577,29 @@ function handleCSV(e) {
 
     // Normalizar headers: minúsculas, sin tildes, sin caracteres raros
     function normalizeKey(s) {
-      return s.trim().toLowerCase()
-        .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')
-        .replace(/[^a-z0-9_]/g,'');
+      var norm = s.trim().toLowerCase()
+        .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ñ/g,'n')
+        .replace(/[^a-z0-9_ ]/g,'').trim().replace(/ +/g,'');
+      // Aliases para columnas conocidas
+      var aliases = {
+        'cantidadmesesflat': 'cantidadmesesflat',
+        'cantidadmesflat': 'cantidadmesesflat',
+        'mesesflat': 'cantidadmesesflat',
+        'mesesconflat': 'cantidadmesesflat',
+        'ultimoflatcontratado': 'ultimoflatcontratado',
+        'ultimoflat': 'ultimoflatcontratado',
+        'aclaracion': 'aclaraciones',
+        'aclaraciones': 'aclaraciones',
+        'accion': 'accion',
+        'action': 'accion',
+        'comitente': 'comitente',
+        'nombre': 'nombre',
+        'segmento': 'segmento',
+        'aranceles': 'aranceles',
+        'planflat': 'plan_flat',
+        'plan_flat': 'plan_flat',
+      };
+      return aliases[norm] || norm;
     }
     var headers = lines[0].split(sep).map(normalizeKey);
 
@@ -623,7 +689,7 @@ function addManual() {
 
 function exportCSV() {
   if (clients.length === 0) { showToast('No hay clientes para exportar'); return; }
-  var headers = ['nombre','segmento','aranceles','plan_flat','estado','ultimo_contacto','notas'];
+  var headers = ['nombre','comitente','segmento','aranceles','plan_flat','cantidadmesesflat','ultimoflatcontratado','aclaraciones','accion','estado','ultimo_contacto','notas'];
   var rows = clients.map(function(c){
     return headers.map(function(h){ return '"' + (c[h]||'').toString().replace(/"/g,'""') + '"'; }).join(',');
   });
