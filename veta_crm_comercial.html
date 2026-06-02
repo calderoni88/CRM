@@ -231,7 +231,7 @@
                 <th class="sortable" onclick="sortBy('cantidadmesesflat')">Meses Flat</th>
                 <th class="sortable" onclick="sortBy('ultimoflatcontratado')">Último Flat</th>
                 <th class="sortable" onclick="sortBy('aranceles')">Aranceles est.</th>
-                <th class="sortable" onclick="sortBy('ultimo_contacto')">Último contacto</th>
+                <th class="sortable" onclick="sortBy('ultimocontacto')">Último contacto</th>
                 <th class="sortable" onclick="sortBy('estado')">Estado</th>
                 <th></th>
               </tr>
@@ -436,7 +436,7 @@ function renderTable() {
       '<td style="color:var(--text-secondary);font-size:12px;text-align:center;">' + (c.cantidadmesesflat || c.mesesflat || '—') + '</td>' +
       '<td style="color:var(--text-secondary);font-size:12px;">' + (c.ultimoflatcontratado || c.ultimoflat || '—') + '</td>' +
       '<td>' + aran + '</td>' +
-      '<td style="color:var(--text-secondary); font-size:12px;">' + (c.ultimo_contacto || '—') + '</td>' +
+      '<td style="color:var(--text-secondary); font-size:12px;">' + (c.ultimocontacto || '—') + '</td>' +
       '<td>' + statusPill(c.estado) + '</td>' +
       '<td style="display:flex;gap:4px;"><button class="btn sm" onclick="openPanel(' + idx + ')"><i class="ti ti-message"></i> Gestionar</button><button class="btn sm" onclick="deleteClient(' + idx + ')" style="color:var(--text-danger);border-color:var(--text-danger);opacity:0.7;" title="Borrar cliente"><i class="ti ti-trash"></i></button></td>' +
     '</tr>';
@@ -511,7 +511,7 @@ function updateStatus() {
   if (currentClient === null) return;
   var s = document.getElementById('status-select').value;
   clients[currentClient].estado = s;
-  if (s === 'contactado') clients[currentClient].ultimo_contacto = new Date().toLocaleDateString('es-AR');
+  if (s === 'contactado') clients[currentClient].ultimocontacto = new Date().toLocaleDateString('es-AR');
   renderTable();
 }
 
@@ -544,7 +544,7 @@ function saveAran() {
 function markStatus(s) {
   if (currentClient === null) return;
   clients[currentClient].estado = s;
-  if (s === 'contactado') clients[currentClient].ultimo_contacto = new Date().toLocaleDateString('es-AR');
+  if (s === 'contactado') clients[currentClient].ultimocontacto = new Date().toLocaleDateString('es-AR');
   document.getElementById('status-select').value = s;
   renderTable();
   showToast({ contactado: 'Marcado como contactado', respondio: 'Marcado como respondió', cerrado: 'Cerrado' }[s] || '');
@@ -573,7 +573,7 @@ function sortBy(col) {
     th.classList.remove('asc','desc');
   });
   var ths = document.querySelectorAll('th.sortable');
-  var cols = ['nombre','comitente','segmento','accion','cantidadmesesflat','ultimoflatcontratado','aranceles','ultimo_contacto','estado'];
+  var cols = ['nombre','comitente','segmento','accion','cantidadmesesflat','ultimoflatcontratado','aranceles','ultimocontacto','estado'];
   var idx = cols.indexOf(col);
   if (idx > -1 && ths[idx]) ths[idx].classList.add(sortDir === 1 ? 'asc' : 'desc');
   renderTable();
@@ -586,6 +586,7 @@ function clearAll() {
   currentClient = null;
   closePanel();
   document.getElementById('campaign-label').textContent = '—';
+  try { localStorage.removeItem('veta_crm_clients'); localStorage.removeItem('veta_crm_campaign'); } catch(e) {}
   renderTable();
   showToast('Lista borrada');
 }
@@ -634,8 +635,13 @@ function handleCSV(e) {
     var lines = raw.split(/\r?\n/).filter(function(l){ return l.trim(); });
     if (lines.length < 2) { showToast('CSV vacío o sin datos'); return; }
 
-    // Auto-detectar separador: si la primera línea tiene más ";" que "," usamos ";"
-    var sep = (lines[0].split(';').length > lines[0].split(',').length) ? ';' : ',';
+    // Auto-detectar separador: tab, punto y coma, o coma
+    var sepCounts = {
+      '\t': lines[0].split('\t').length - 1,
+      ';':  lines[0].split(';').length - 1,
+      ',':  lines[0].split(',').length - 1
+    };
+    var sep = Object.keys(sepCounts).reduce(function(a,b){ return sepCounts[a] >= sepCounts[b] ? a : b; });
 
     // Normalizar headers: minúsculas, sin tildes, sin caracteres raros
     function normalizeKey(s) {
@@ -660,7 +666,12 @@ function handleCSV(e) {
         'aranceles': 'aranceles',
         'planflat': 'plan_flat',
         'plan_flat': 'plan_flat',
-        'planflat': 'plan_flat',
+        'ultimocontacto': 'ultimocontacto',
+        'ultimocontactado': 'ultimocontacto',
+        'fechacontacto': 'ultimocontacto',
+        'fechaultimocontacto': 'ultimocontacto',
+        'ultimafechacontacto': 'ultimocontacto',
+        'ultimocontacto': 'ultimocontacto',
       };
       return aliases[norm] || norm;
     }
@@ -693,7 +704,7 @@ function handleCSV(e) {
     var added = 0;
     for (var i = 1; i < lines.length; i++) {
       var cols = splitRow(lines[i], sep);
-      var obj = { estado: 'pendiente', notas: '', ultimo_contacto: '' };
+      var obj = { estado: 'pendiente', notas: '', ultimocontacto: '' };
       headers.forEach(function(h, j) {
         if (h) obj[h] = (cols[j] || '').trim();
       });
@@ -741,7 +752,7 @@ function addManual() {
     plan_flat: document.getElementById('mn-flat').value,
     estado: 'pendiente',
     notas: '',
-    ultimo_contacto: ''
+    ultimocontacto: ''
   });
   document.getElementById('mn-nombre').value = '';
   document.getElementById('mn-aran').value = '';
@@ -752,7 +763,7 @@ function addManual() {
 
 function exportCSV() {
   if (clients.length === 0) { showToast('No hay clientes para exportar'); return; }
-  var headers = ['nombre','comitente','segmento','aranceles','plan_flat','cantidadmesesflat','ultimoflatcontratado','aclaraciones','accion','estado','ultimo_contacto','notas'];
+  var headers = ['nombre','comitente','segmento','aranceles','plan_flat','cantidadmesesflat','ultimoflatcontratado','aclaraciones','accion','estado','ultimocontacto','notas'];
   var rows = clients.map(function(c){
     return headers.map(function(h){ return '"' + (c[h]||'').toString().replace(/"/g,'""') + '"'; }).join(',');
   });
@@ -781,7 +792,16 @@ function saveStorage() {
 function loadStorage() {
   try {
     var saved = localStorage.getItem('veta_crm_clients');
-    if (saved) { clients = JSON.parse(saved); }
+    if (saved) {
+      clients = JSON.parse(saved);
+      // Migrar campo viejo ultimo_contacto → ultimocontacto
+      clients.forEach(function(c) {
+        if (c['ultimo_contacto'] !== undefined && !c.ultimocontacto) {
+          c.ultimocontacto = c['ultimo_contacto'];
+          delete c['ultimo_contacto'];
+        }
+      });
+    }
     var camp = localStorage.getItem('veta_crm_campaign');
     if (camp) document.getElementById('campaign-label').textContent = camp;
   } catch(e) {}
