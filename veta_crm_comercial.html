@@ -189,6 +189,7 @@
   <div class="main">
     <div class="topbar">
       <h1 id="view-title">Pipeline de contactos</h1>
+      <button class="btn" onclick="clearAll()" style="color:var(--text-danger);border-color:var(--text-danger);opacity:0.7;"><i class="ti ti-trash"></i> Borrar todos</button>
       <button class="btn" onclick="exportCSV()"><i class="ti ti-download"></i> Exportar CSV</button>
       <button class="btn primary" onclick="showView('import')"><i class="ti ti-plus"></i> Nuevo cliente</button>
     </div>
@@ -430,7 +431,7 @@ function renderTable() {
       '<td>' + aran + '</td>' +
       '<td style="color:var(--text-secondary); font-size:12px;">' + (c.ultimo_contacto || '—') + '</td>' +
       '<td>' + statusPill(c.estado) + '</td>' +
-      '<td><button class="btn sm" onclick="openPanel(' + idx + ')"><i class="ti ti-message"></i> Gestionar</button></td>' +
+      '<td style="display:flex;gap:4px;"><button class="btn sm" onclick="openPanel(' + idx + ')"><i class="ti ti-message"></i> Gestionar</button><button class="btn sm" onclick="deleteClient(' + idx + ')" style="color:var(--text-danger);border-color:var(--text-danger);opacity:0.7;" title="Borrar cliente"><i class="ti ti-trash"></i></button></td>' +
     '</tr>';
   }).join('');
   updateMetrics();
@@ -536,6 +537,27 @@ function markStatus(s) {
   document.getElementById('status-select').value = s;
   renderTable();
   showToast({ contactado: 'Marcado como contactado', respondio: 'Marcado como respondió', cerrado: 'Cerrado' }[s] || '');
+}
+
+function clearAll() {
+  if (clients.length === 0) { showToast('No hay clientes para borrar'); return; }
+  if (!confirm('¿Borrar todos los ' + clients.length + ' clientes? Esta acción no se puede deshacer.')) return;
+  clients = [];
+  currentClient = null;
+  closePanel();
+  document.getElementById('campaign-label').textContent = '—';
+  renderTable();
+  showToast('Lista borrada');
+}
+
+function deleteClient(idx) {
+  var nombre = clients[idx] ? clients[idx].nombre : 'este cliente';
+  if (!confirm('¿Borrar a ' + nombre + '?')) return;
+  if (currentClient === idx) { closePanel(); currentClient = null; }
+  else if (currentClient > idx) { currentClient--; }
+  clients.splice(idx, 1);
+  renderTable();
+  showToast(nombre + ' eliminado');
 }
 
 function showView(v) {
