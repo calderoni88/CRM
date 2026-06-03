@@ -6,197 +6,138 @@
 <title>CRM Comercial — VetaCap</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f5f5f4;
-    --bg-tertiary: #f0efed;
-    --bg-info: #e6f1fb;
-    --bg-success: #eaf3de;
-    --bg-warning: #faeeda;
-    --bg-danger: #fcebeb;
-    --text-primary: #1a1a18;
-    --text-secondary: #5f5e5a;
-    --text-tertiary: #888780;
-    --text-info: #0c447c;
-    --text-success: #27500a;
-    --text-warning: #633806;
-    --text-danger: #791f1f;
-    --border-light: rgba(0,0,0,0.10);
-    --border-mid: rgba(0,0,0,0.18);
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg-primary: #1c1c1a;
-      --bg-secondary: #242422;
-      --bg-tertiary: #2c2c2a;
-      --bg-info: #042c53;
-      --bg-success: #173404;
-      --bg-warning: #412402;
-      --bg-danger: #501313;
-      --text-primary: #f0efed;
-      --text-secondary: #b4b2a9;
-      --text-tertiary: #888780;
-      --text-info: #b5d4f4;
-      --text-success: #c0dd97;
-      --text-warning: #fac775;
-      --text-danger: #f7c1c1;
-      --border-light: rgba(255,255,255,0.08);
-      --border-mid: rgba(255,255,255,0.15);
-    }
-  }
-  body { font-family: var(--font); background: var(--bg-tertiary); color: var(--text-primary); height: 100vh; overflow: hidden; }
-  .app { display: flex; height: 100vh; }
-
-  /* Sidebar */
-  .sidebar { width: 220px; min-width: 220px; background: var(--bg-primary); border-right: 0.5px solid var(--border-light); display: flex; flex-direction: column; }
-  .sidebar-logo { padding: 16px; border-bottom: 0.5px solid var(--border-light); }
-  .sidebar-logo span { font-size: 11px; font-weight: 500; color: var(--text-tertiary); letter-spacing: 0.06em; text-transform: uppercase; }
-  .sidebar-logo strong { display: block; font-size: 15px; font-weight: 500; color: var(--text-primary); margin-top: 2px; }
-  .sidebar-nav { padding: 8px; flex: 1; }
-  .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius-md); cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: background 0.12s; margin-bottom: 2px; user-select: none; }
-  .nav-item:hover { background: var(--bg-secondary); color: var(--text-primary); }
-  .nav-item.active { background: var(--bg-secondary); color: var(--text-primary); font-weight: 500; }
-  .nav-item i { font-size: 16px; }
-  .badge { margin-left: auto; background: var(--bg-info); color: var(--text-info); font-size: 11px; padding: 1px 7px; border-radius: 20px; font-weight: 500; }
-  .sidebar-footer { padding: 12px 16px; border-top: 0.5px solid var(--border-light); }
-  .sidebar-footer .sf-label { font-size: 11px; color: var(--text-tertiary); }
-  .sidebar-footer .sf-value { font-size: 13px; font-weight: 500; margin-top: 2px; color: var(--text-primary); }
-
-  /* Main */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .topbar { background: var(--bg-primary); border-bottom: 0.5px solid var(--border-light); padding: 12px 20px; display: flex; align-items: center; gap: 10px; }
-  .topbar h1 { font-size: 15px; font-weight: 500; flex: 1; }
-  .content { flex: 1; overflow-y: auto; padding: 16px 20px; }
-
-  /* Buttons */
-  .btn { background: transparent; border: 0.5px solid var(--border-mid); border-radius: var(--radius-md); padding: 6px 12px; font-size: 12px; cursor: pointer; color: var(--text-primary); display: inline-flex; align-items: center; gap: 6px; font-family: var(--font); transition: background 0.12s; }
-  .btn:hover { background: var(--bg-secondary); }
-  .btn:active { transform: scale(0.98); }
-  .btn.primary { background: var(--bg-info); color: var(--text-info); border-color: transparent; }
-  .btn.primary:hover { opacity: 0.85; }
-  .btn.sm { padding: 4px 8px; font-size: 11px; }
-
-  /* Metrics */
-  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
-  .metric { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 12px 14px; }
-  .metric .m-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
-  .metric .m-value { font-size: 22px; font-weight: 500; }
-
-  /* Filters */
-  .filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-  .filter-chip { padding: 4px 10px; border-radius: 20px; font-size: 12px; border: 0.5px solid var(--border-light); cursor: pointer; background: transparent; color: var(--text-secondary); font-family: var(--font); transition: all 0.1s; }
-  .filter-chip:hover { border-color: var(--border-mid); color: var(--text-primary); }
-  .filter-chip.active { background: var(--bg-primary); border-color: var(--border-mid); color: var(--text-primary); font-weight: 500; }
-
-  /* Table */
-  .table-wrap { background: var(--bg-primary); border-radius: var(--radius-lg); border: 0.5px solid var(--border-light); overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 500; color: var(--text-secondary); border-bottom: 0.5px solid var(--border-light); letter-spacing: 0.03em; }
-  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
-  th.sortable:hover { color: var(--text-primary); }
-  th.sortable::after { content: ' ⇅'; opacity: 0.3; font-size: 10px; }
-  th.sortable.asc::after { content: ' ↑'; opacity: 1; }
-  th.sortable.desc::after { content: ' ↓'; opacity: 1; }
-  td { padding: 10px 14px; border-bottom: 0.5px solid var(--border-light); color: var(--text-primary); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg-secondary); }
-
-  /* Pills */
-  .status-pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-  .s-pendiente { background: var(--bg-warning); color: var(--text-warning); }
-  .s-contactado { background: var(--bg-info); color: var(--text-info); }
-  .s-respondio { background: var(--bg-success); color: var(--text-success); }
-  .s-cerrado { background: var(--bg-secondary); color: var(--text-secondary); }
-  .seg-pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; }
-  .seg-top { background: #FAEEDA; color: #633806; }
-  .seg-activo { background: #EAF3DE; color: #27500A; }
-  .seg-dormido { background: #FCEBEB; color: #791F1F; }
-  .seg-sinflat { background: #E6F1FB; color: #0C447C; }
-
-  /* Empty state */
-  .empty-state { text-align: center; padding: 56px 24px; color: var(--text-secondary); font-size: 13px; }
-  .empty-state i { font-size: 36px; display: block; margin-bottom: 10px; color: var(--text-tertiary); }
-
-  /* Panel lateral */
-  .panel { position: fixed; top: 0; right: 0; width: 420px; height: 100vh; background: var(--bg-primary); border-left: 0.5px solid var(--border-light); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.2s ease; z-index: 100; box-shadow: -4px 0 24px rgba(0,0,0,0.06); }
-  .panel.open { transform: translateX(0); }
-  .panel-header { padding: 16px; border-bottom: 0.5px solid var(--border-light); display: flex; align-items: center; gap: 8px; }
-  .panel-header h3 { font-size: 14px; font-weight: 500; flex: 1; }
-  .panel-body { flex: 1; overflow-y: auto; padding: 16px; }
-  .panel-footer { padding: 14px 16px; border-top: 0.5px solid var(--border-light); display: flex; gap: 8px; }
-
-  /* Form fields */
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
-  select, textarea, input[type="text"], input[type="number"] {
-    width: 100%; font-size: 13px; font-family: var(--font);
-    background: var(--bg-primary); color: var(--text-primary);
-    border: 0.5px solid var(--border-mid); border-radius: var(--radius-md);
-    padding: 7px 10px; outline: none; transition: border-color 0.12s;
-  }
-  select:focus, textarea:focus, input:focus { border-color: var(--text-secondary); }
-  textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
-
-  /* Message preview */
-  .msg-box { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 12px; font-size: 13px; line-height: 1.65; color: var(--text-primary); white-space: pre-wrap; border: 0.5px solid var(--border-light); }
-
-  /* Import area */
-  .import-area { border: 1px dashed var(--border-mid); border-radius: var(--radius-lg); padding: 36px 24px; text-align: center; cursor: pointer; color: var(--text-secondary); font-size: 13px; transition: background 0.12s; }
-  .import-area:hover { background: var(--bg-secondary); }
-  .import-area i { font-size: 36px; display: block; margin-bottom: 10px; color: var(--text-tertiary); }
-  .divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; }
-  .divider span { font-size: 12px; color: var(--text-tertiary); white-space: nowrap; }
-  .divider::before, .divider::after { content:''; flex:1; height: 0.5px; background: var(--border-light); }
-
-  /* Template cards */
-  .tpl-card { background: var(--bg-primary); border: 0.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px; }
-  .tpl-card .tpl-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
-  .tpl-card .tpl-seg { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
-  .tpl-card .tpl-preview { font-size: 12px; color: var(--text-secondary); white-space: pre-wrap; line-height: 1.5; background: var(--bg-secondary); border-radius: var(--radius-md); padding: 10px; }
-
-  /* Toast */
-  .toast { position: fixed; bottom: 20px; right: 20px; background: var(--text-primary); color: var(--bg-primary); font-size: 13px; padding: 10px 16px; border-radius: var(--radius-md); opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none; z-index: 200; }
-  .toast.show { opacity: 1; transform: translateY(0); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg-p:#fff;--bg-s:#f5f5f4;--bg-t:#f0efed;
+  --bg-info:#e6f1fb;--bg-ok:#eaf3de;--bg-warn:#faeeda;--bg-err:#fcebeb;
+  --tx-p:#1a1a18;--tx-s:#5f5e5a;--tx-t:#888780;
+  --tx-info:#0c447c;--tx-ok:#27500a;--tx-warn:#633806;--tx-err:#791f1f;
+  --bl:rgba(0,0,0,.10);--bm:rgba(0,0,0,.18);
+  --rm:8px;--rl:12px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg-p:#1c1c1a;--bg-s:#242422;--bg-t:#2c2c2a;
+  --bg-info:#042c53;--bg-ok:#173404;--bg-warn:#412402;--bg-err:#501313;
+  --tx-p:#f0efed;--tx-s:#b4b2a9;--tx-t:#888780;
+  --tx-info:#b5d4f4;--tx-ok:#c0dd97;--tx-warn:#fac775;--tx-err:#f7c1c1;
+  --bl:rgba(255,255,255,.08);--bm:rgba(255,255,255,.15);
+}}
+body{font-family:var(--font);background:var(--bg-t);color:var(--tx-p);height:100vh;overflow:hidden;}
+.app{display:flex;height:100vh;}
+.sidebar{width:220px;min-width:220px;background:var(--bg-p);border-right:.5px solid var(--bl);display:flex;flex-direction:column;}
+.sb-logo{padding:16px;border-bottom:.5px solid var(--bl);}
+.sb-logo span{font-size:11px;font-weight:500;color:var(--tx-t);letter-spacing:.06em;text-transform:uppercase;}
+.sb-logo strong{display:block;font-size:15px;font-weight:500;color:var(--tx-p);margin-top:2px;}
+.sb-nav{padding:8px;flex:1;overflow-y:auto;}
+.nav-sec{padding:8px 10px 4px;font-size:10px;font-weight:600;color:var(--tx-t);letter-spacing:.08em;text-transform:uppercase;margin-top:6px;}
+.nav-sec.divided{margin-top:12px;border-top:.5px solid var(--bl);padding-top:12px;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rm);cursor:pointer;font-size:13px;color:var(--tx-s);transition:background .12s;margin-bottom:2px;user-select:none;}
+.nav-item:hover{background:var(--bg-s);color:var(--tx-p);}
+.nav-item.active{background:var(--bg-s);color:var(--tx-p);font-weight:500;}
+.badge{margin-left:auto;background:var(--bg-info);color:var(--tx-info);font-size:11px;padding:1px 7px;border-radius:20px;font-weight:500;}
+.sb-foot{padding:12px 16px;border-top:.5px solid var(--bl);}
+.sb-foot .lbl{font-size:11px;color:var(--tx-t);}
+.sb-foot .val{font-size:13px;font-weight:500;margin-top:2px;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--bg-p);border-bottom:.5px solid var(--bl);padding:12px 20px;display:flex;align-items:center;gap:8px;}
+.topbar h1{font-size:15px;font-weight:500;flex:1;}
+.content{flex:1;overflow-y:auto;padding:16px 20px;}
+.btn{background:transparent;border:.5px solid var(--bm);border-radius:var(--rm);padding:6px 12px;font-size:12px;cursor:pointer;color:var(--tx-p);display:inline-flex;align-items:center;gap:6px;font-family:var(--font);transition:background .12s;white-space:nowrap;}
+.btn:hover{background:var(--bg-s);}
+.btn.primary{background:var(--bg-info);color:var(--tx-info);border-color:transparent;}
+.btn.sm{padding:4px 8px;font-size:11px;}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.metric{background:var(--bg-s);border-radius:var(--rm);padding:12px 14px;}
+.metric .ml{font-size:12px;color:var(--tx-s);margin-bottom:4px;}
+.metric .mv{font-size:22px;font-weight:500;}
+.filters{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.chip{padding:4px 10px;border-radius:20px;font-size:12px;border:.5px solid var(--bl);cursor:pointer;background:transparent;color:var(--tx-s);font-family:var(--font);transition:all .1s;}
+.chip:hover{border-color:var(--bm);color:var(--tx-p);}
+.chip.active{background:var(--bg-p);border-color:var(--bm);color:var(--tx-p);font-weight:500;}
+.tw{background:var(--bg-p);border-radius:var(--rl);border:.5px solid var(--bl);overflow:hidden;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:500;color:var(--tx-s);border-bottom:.5px solid var(--bl);letter-spacing:.03em;white-space:nowrap;}
+th.s{cursor:pointer;user-select:none;}
+th.s:hover{color:var(--tx-p);}
+th.s::after{content:' ⇅';opacity:.3;font-size:10px;}
+th.s.asc::after{content:' ↑';opacity:1;}
+th.s.desc::after{content:' ↓';opacity:1;}
+td{padding:10px 14px;border-bottom:.5px solid var(--bl);color:var(--tx-p);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg-s);}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.p-pend{background:var(--bg-warn);color:var(--tx-warn);}
+.p-cont{background:var(--bg-info);color:var(--tx-info);}
+.p-resp{background:var(--bg-ok);color:var(--tx-ok);}
+.p-cerr{background:var(--bg-s);color:var(--tx-s);}
+.p-sin{background:var(--bg-warn);color:var(--tx-warn);}
+.p-proc{background:var(--bg-info);color:var(--tx-info);}
+.p-gest{background:var(--bg-ok);color:var(--tx-ok);}
+.seg-top{background:#FAEEDA;color:#633806;}
+.seg-act{background:#EAF3DE;color:#27500A;}
+.seg-dorm{background:#FCEBEB;color:#791F1F;}
+.seg-sf{background:#E6F1FB;color:#0C447C;}
+.empty{text-align:center;padding:56px 24px;color:var(--tx-s);font-size:13px;}
+.empty i{font-size:36px;display:block;margin-bottom:10px;color:var(--tx-t);}
+.panel{position:fixed;top:0;right:0;width:420px;height:100vh;background:var(--bg-p);border-left:.5px solid var(--bl);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s ease;z-index:100;box-shadow:-4px 0 24px rgba(0,0,0,.06);}
+.panel.open{transform:translateX(0);}
+.ph{padding:16px;border-bottom:.5px solid var(--bl);display:flex;align-items:center;gap:8px;}
+.ph h3{font-size:14px;font-weight:500;flex:1;}
+.pb{flex:1;overflow-y:auto;padding:16px;}
+.pf{padding:14px 16px;border-top:.5px solid var(--bl);display:flex;gap:8px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;color:var(--tx-s);margin-bottom:5px;}
+select,textarea,input[type=text],input[type=number]{width:100%;font-size:13px;font-family:var(--font);background:var(--bg-p);color:var(--tx-p);border:.5px solid var(--bm);border-radius:var(--rm);padding:7px 10px;outline:none;}
+textarea{resize:vertical;min-height:110px;line-height:1.6;}
+.msgbox{background:var(--bg-s);border-radius:var(--rm);padding:12px;font-size:13px;line-height:1.65;white-space:pre-wrap;border:.5px solid var(--bl);}
+.ia{border:1px dashed var(--bm);border-radius:var(--rl);padding:36px 24px;text-align:center;cursor:pointer;color:var(--tx-s);font-size:13px;transition:background .12s;}
+.ia:hover{background:var(--bg-s);}
+.ia i{font-size:36px;display:block;margin-bottom:10px;color:var(--tx-t);}
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0;}
+.divider span{font-size:12px;color:var(--tx-t);white-space:nowrap;}
+.divider::before,.divider::after{content:'';flex:1;height:.5px;background:var(--bl);}
+.tpl-card{background:var(--bg-p);border:.5px solid var(--bl);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px;}
+.tpl-card .tn{font-size:13px;font-weight:500;margin-bottom:4px;}
+.tpl-card .ts{font-size:11px;color:var(--tx-s);margin-bottom:8px;}
+.tpl-card .tp{font-size:12px;color:var(--tx-s);white-space:pre-wrap;line-height:1.5;background:var(--bg-s);border-radius:var(--rm);padding:10px;}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--tx-p);color:var(--bg-p);font-size:13px;padding:10px 16px;border-radius:var(--rm);opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;z-index:200;}
+.toast.show{opacity:1;transform:translateY(0);}
+code{background:var(--bg-s);padding:1px 5px;border-radius:4px;font-size:12px;}
 </style>
 </head>
 <body>
-
 <div class="app">
-  <!-- Sidebar -->
+
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="sidebar-logo">
-      <span>VetaCap</span>
-      <strong>CRM Comercial</strong>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-item active" id="nav-pipeline" onclick="showView('pipeline')">
-        <i class="ti ti-layout-kanban"></i> Pipeline
-        <span class="badge" id="badge-total">0</span>
-      </div>
-      <div class="nav-item" id="nav-import" onclick="showView('import')">
-        <i class="ti ti-upload"></i> Importar clientes
-      </div>
-      <div class="nav-item" id="nav-templates" onclick="showView('templates')">
-        <i class="ti ti-template"></i> Plantillas
-      </div>
+    <div class="sb-logo"><span>VetaCap</span><strong>CRM Comercial</strong></div>
+    <nav class="sb-nav">
+      <div class="nav-sec">Pipeline</div>
+      <div class="nav-item active" id="nav-pipeline" onclick="showView('pipeline')"><i class="ti ti-layout-kanban"></i> Pipeline <span class="badge" id="badge-total">0</span></div>
+      <div class="nav-item" id="nav-import" onclick="showView('import')"><i class="ti ti-upload"></i> Importar clientes</div>
+      <div class="nav-item" id="nav-templates" onclick="showView('templates')"><i class="ti ti-template"></i> Plantillas</div>
+      <div class="nav-sec divided">Top Clientes</div>
+      <div class="nav-item" id="nav-top" onclick="showView('top')"><i class="ti ti-star"></i> Top Clientes <span class="badge" id="badge-top">0</span></div>
+      <div class="nav-item" id="nav-topimport" onclick="showView('topimport')"><i class="ti ti-upload"></i> Importar top</div>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sf-label">Campaña activa</div>
-      <div class="sf-value" id="campaign-label">—</div>
-    </div>
+    <div class="sb-foot"><div class="lbl">Campaña activa</div><div class="val" id="campaign-label">—</div></div>
   </div>
 
-  <!-- Main -->
+  <!-- MAIN -->
   <div class="main">
     <div class="topbar">
       <h1 id="view-title">Pipeline de contactos</h1>
-      <button class="btn" onclick="clearAll()" style="color:var(--text-danger);border-color:var(--text-danger);opacity:0.7;"><i class="ti ti-trash"></i> Borrar todos</button>
-      <button class="btn" onclick="exportCSV()"><i class="ti ti-download"></i> Exportar CSV</button>
-      <button class="btn primary" onclick="showView('import')"><i class="ti ti-plus"></i> Nuevo cliente</button>
+      <div id="tb-crm" style="display:flex;gap:8px;">
+        <button class="btn" onclick="clearAll()" style="color:var(--tx-err);border-color:var(--tx-err);opacity:.7;"><i class="ti ti-trash"></i> Borrar todos</button>
+        <button class="btn" onclick="exportCSV()"><i class="ti ti-download"></i> Exportar CSV</button>
+        <button class="btn primary" onclick="showView('import')"><i class="ti ti-plus"></i> Nuevo cliente</button>
+      </div>
+      <div id="tb-top" style="display:none;gap:8px;">
+        <button class="btn" onclick="clearTop()" style="color:var(--tx-err);border-color:var(--tx-err);opacity:.7;"><i class="ti ti-trash"></i> Borrar todos</button>
+        <button class="btn" onclick="exportTopCSV()"><i class="ti ti-download"></i> Exportar CSV</button>
+        <button class="btn primary" onclick="showView('topimport')"><i class="ti ti-upload"></i> Importar</button>
+      </div>
     </div>
 
     <div class="content">
@@ -204,611 +145,465 @@
       <!-- PIPELINE -->
       <div id="view-pipeline">
         <div class="metrics">
-          <div class="metric"><div class="m-label">Total clientes</div><div class="m-value" id="m-total">0</div></div>
-          <div class="metric"><div class="m-label">Pendientes</div><div class="m-value" id="m-pending">0</div></div>
-          <div class="metric"><div class="m-label">Contactados</div><div class="m-value" id="m-sent">0</div></div>
-          <div class="metric"><div class="m-label">Respondieron</div><div class="m-value" id="m-replied">0</div></div>
+          <div class="metric"><div class="ml">Total</div><div class="mv" id="m-total">0</div></div>
+          <div class="metric"><div class="ml">Pendientes</div><div class="mv" id="m-pend">0</div></div>
+          <div class="metric"><div class="ml">Contactados</div><div class="mv" id="m-cont">0</div></div>
+          <div class="metric"><div class="ml">Respondieron</div><div class="mv" id="m-resp">0</div></div>
         </div>
-        <div class="filters">
-          <button class="filter-chip active" onclick="setFilter('todos',this)">Todos</button>
-          <button class="filter-chip" onclick="setFilter('pendiente',this)">Pendiente</button>
-          <button class="filter-chip" onclick="setFilter('contactado',this)">Contactado</button>
-          <button class="filter-chip" onclick="setFilter('respondio',this)">Respondió</button>
-          <button class="filter-chip" onclick="setFilter('cerrado',this)">Cerrado</button>
-          <button class="filter-chip" onclick="setFilter('top',this)">Top</button>
-          <button class="filter-chip" onclick="setFilter('activo',this)">Activo</button>
-          <button class="filter-chip" onclick="setFilter('dormido',this)">Dormido</button>
-          <button class="filter-chip" onclick="setFilter('sinflat',this)">Sin flat</button>
+        <div class="filters" id="crm-filters">
+          <button class="chip active" onclick="setFilter('todos',this)">Todos</button>
+          <button class="chip" onclick="setFilter('pendiente',this)">Pendiente</button>
+          <button class="chip" onclick="setFilter('contactado',this)">Contactado</button>
+          <button class="chip" onclick="setFilter('respondio',this)">Respondió</button>
+          <button class="chip" onclick="setFilter('cerrado',this)">Cerrado</button>
+          <button class="chip" onclick="setFilter('top',this)">Top</button>
+          <button class="chip" onclick="setFilter('activo',this)">Activo</button>
+          <button class="chip" onclick="setFilter('dormido',this)">Dormido</button>
+          <button class="chip" onclick="setFilter('sinflat',this)">Sin flat</button>
         </div>
-        <div class="table-wrap">
+        <div class="tw">
           <table>
-            <thead>
-              <tr>
-                <th class="sortable" onclick="sortBy('nombre')">Cliente</th>
-                <th class="sortable" onclick="sortBy('comitente')">Comitente</th>
-                <th class="sortable" onclick="sortBy('segmento')">Segmento</th>
-                <th class="sortable" onclick="sortBy('accion')">Acción</th>
-                <th class="sortable" onclick="sortBy('cantidadmesesflat')">Meses Flat</th>
-                <th class="sortable" onclick="sortBy('ultimoflatcontratado')">Último Flat</th>
-                <th class="sortable" onclick="sortBy('aranceles')">Aranceles est.</th>
-                <th class="sortable" onclick="sortBy('ultimocontacto')">Último contacto</th>
-                <th class="sortable" onclick="sortBy('estado')">Estado</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="client-table"></tbody>
+            <thead><tr>
+              <th class="s" onclick="sortCRM('nombre')">Cliente</th>
+              <th class="s" onclick="sortCRM('comitente')">Comitente</th>
+              <th class="s" onclick="sortCRM('segmento')">Segmento</th>
+              <th class="s" onclick="sortCRM('accion')">Acción</th>
+              <th class="s" onclick="sortCRM('cantidadmesesflat')">Meses Flat</th>
+              <th class="s" onclick="sortCRM('ultimoflatcontratado')">Último Flat</th>
+              <th class="s" onclick="sortCRM('aranceles')">Aranceles est.</th>
+              <th class="s" onclick="sortCRM('ultimocontacto')">Último contacto</th>
+              <th class="s" onclick="sortCRM('estado')">Estado</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="crm-tbody"></tbody>
           </table>
-          <div id="empty-state" class="empty-state" style="display:none;">
-            <i class="ti ti-users"></i>
-            No hay clientes todavía.<br>Importá un CSV o agregá uno manualmente.
-          </div>
+          <div id="crm-empty" class="empty" style="display:none;"><i class="ti ti-users"></i>No hay clientes todavía.<br>Importá un CSV o agregá uno manualmente.</div>
         </div>
       </div>
 
-      <!-- IMPORT -->
-      <div id="view-import" style="display:none; max-width:540px;">
-        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px; line-height:1.6;">
-          Importá un CSV con columnas: <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">nombre</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">comitente</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">segmento</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">aranceles</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">plan_flat</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">cantidad meses flat</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">ultimo flat contratado</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">aclaraciones</code>, <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">acción</code>.
-          El segmento puede ser: <em>top, activo, dormido, sinflat</em>.
-        </p>
-        <div class="import-area" onclick="document.getElementById('csv-input').click()">
-          <i class="ti ti-file-spreadsheet"></i>
-          Hacé clic o arrastrá un CSV aquí
-        </div>
-        <input type="file" id="csv-input" accept=".csv" style="display:none" onchange="handleCSV(event)">
-
+      <!-- IMPORT CRM -->
+      <div id="view-import" style="display:none;max-width:540px;">
+        <p style="font-size:13px;color:var(--tx-s);margin-bottom:16px;line-height:1.6;">Columnas: <code>nombre</code> <code>comitente</code> <code>segmento</code> <code>aranceles</code> <code>plan_flat</code> <code>cantidad meses flat</code> <code>ultimo flat contratado</code> <code>aclaraciones</code> <code>acción</code> <code>ultimo contacto</code>. Segmento: <em>top, activo, dormido, sinflat</em>.</p>
+        <div class="ia" onclick="document.getElementById('csv-crm').click()"><i class="ti ti-file-spreadsheet"></i>Hacé clic o arrastrá un CSV aquí</div>
+        <input type="file" id="csv-crm" accept=".csv" style="display:none" onchange="handleCRMcsv(event)">
         <div class="divider"><span>o agregá manualmente</span></div>
-
-        <div style="display:grid; gap:10px;">
-          <div class="field"><label>Nombre completo</label><input type="text" id="mn-nombre" placeholder="Ej: Juan García"></div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div class="field"><label>Segmento</label>
-              <select id="mn-seg">
-                <option value="top">Top cliente</option>
-                <option value="activo">Activo</option>
-                <option value="dormido">Dormido</option>
-                <option value="sinflat">Sin flat</option>
-              </select>
-            </div>
-            <div class="field"><label>Plan flat activo</label>
-              <select id="mn-flat"><option value="no">No</option><option value="si">Sí</option></select>
-            </div>
+        <div style="display:grid;gap:10px;">
+          <div class="field"><label>Nombre</label><input type="text" id="mn-nom" placeholder="Ej: Juan García"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="field"><label>Segmento</label><select id="mn-seg"><option value="top">Top</option><option value="activo">Activo</option><option value="dormido">Dormido</option><option value="sinflat">Sin flat</option></select></div>
+            <div class="field"><label>Plan flat</label><select id="mn-flat"><option value="no">No</option><option value="si">Sí</option></select></div>
           </div>
-          <div class="field"><label>Aranceles estimados ($/mes)</label><input type="number" id="mn-aran" placeholder="Ej: 45000"></div>
-          <button class="btn primary" onclick="addManual()" style="width:fit-content;"><i class="ti ti-plus"></i> Agregar cliente</button>
+          <div class="field"><label>Aranceles est. ($)</label><input type="number" id="mn-aran" placeholder="45000"></div>
+          <button class="btn primary" onclick="addManual()" style="width:fit-content;"><i class="ti ti-plus"></i> Agregar</button>
         </div>
       </div>
 
       <!-- TEMPLATES -->
-      <div id="view-templates" style="display:none; max-width:640px;">
-        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">
-          Plantillas precargadas. Usá <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">[Nombre]</code> y
-          <code style="background:var(--bg-secondary);padding:1px 5px;border-radius:4px;">[X]</code> como variables — se completan automáticamente al gestionar un cliente.
-        </p>
-        <div id="templates-list"></div>
+      <div id="view-templates" style="display:none;max-width:640px;">
+        <p style="font-size:13px;color:var(--tx-s);margin-bottom:16px;">Plantillas precargadas. Variables <code>[Nombre]</code> y <code>[X]</code> se completan automáticamente.</p>
+        <div id="tpl-list"></div>
+      </div>
+
+      <!-- TOP CLIENTES -->
+      <div id="view-top" style="display:none;">
+        <div class="metrics">
+          <div class="metric"><div class="ml">Total top</div><div class="mv" id="tm-total">0</div></div>
+          <div class="metric"><div class="ml">Sin gestión</div><div class="mv" id="tm-sin">0</div></div>
+          <div class="metric"><div class="ml">En proceso</div><div class="mv" id="tm-proc">0</div></div>
+          <div class="metric"><div class="ml">Gestionados</div><div class="mv" id="tm-gest">0</div></div>
+        </div>
+        <div class="filters" id="top-filters">
+          <button class="chip active" onclick="setTopFilter('todos',this)">Todos</button>
+          <button class="chip" onclick="setTopFilter('sinGestion',this)">Sin gestión</button>
+          <button class="chip" onclick="setTopFilter('enProceso',this)">En proceso</button>
+          <button class="chip" onclick="setTopFilter('gestionado',this)">Gestionado</button>
+          <button class="chip" onclick="setTopFilter('flatsi',this)">Flat activo</button>
+          <button class="chip" onclick="setTopFilter('flatno',this)">Sin flat</button>
+          <button class="chip" onclick="setTopFilter('informesi',this)">Informe enviado</button>
+          <button class="chip" onclick="setTopFilter('informeno',this)">Sin informe</button>
+        </div>
+        <div class="tw">
+          <table>
+            <thead><tr>
+              <th class="s" onclick="sortTop('comitente')">Comitente</th>
+              <th class="s" onclick="sortTop('segmento')">Segmento</th>
+              <th class="s" onclick="sortTop('ingresos')">Ingresos</th>
+              <th class="s" onclick="sortTop('ptotal')">% Total</th>
+              <th class="s" onclick="sortTop('flatshistorico')">FLATs hist.</th>
+              <th class="s" onclick="sortTop('flatactual')">Flat actual</th>
+              <th class="s" onclick="sortTop('desdecuandoopera')">Opera desde</th>
+              <th class="s" onclick="sortTop('informeenviado')">Informe</th>
+              <th class="s" onclick="sortTop('accion')">Acción</th>
+              <th class="s" onclick="sortTop('estado')">Estado</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="top-tbody"></tbody>
+          </table>
+          <div id="top-empty" class="empty" style="display:none;"><i class="ti ti-star"></i>No hay clientes top todavía.<br>Importá un CSV desde "Importar top".</div>
+        </div>
+      </div>
+
+      <!-- TOP IMPORT -->
+      <div id="view-topimport" style="display:none;max-width:540px;">
+        <p style="font-size:13px;color:var(--tx-s);margin-bottom:16px;line-height:1.6;">Columnas: <code>Comitente</code> <code>Segmento</code> <code>Ingresos</code> <code>% Total</code> <code>Cantidad FLATs histórico</code> <code>Flat actual?</code> <code>Desde cuando opera</code> <code>Informe enviado?</code> <code>Acción</code>. Acepta tab, punto y coma o coma.</p>
+        <div class="ia" onclick="document.getElementById('csv-top').click()"><i class="ti ti-file-spreadsheet"></i>Hacé clic o arrastrá tu CSV de Top Clientes aquí</div>
+        <input type="file" id="csv-top" accept=".csv" style="display:none" onchange="handleTopCSV(event)">
       </div>
 
     </div>
   </div>
 </div>
 
-<!-- Panel lateral -->
-<div class="panel" id="detail-panel">
-  <div class="panel-header">
-    <h3 id="panel-name">—</h3>
-    <span id="panel-seg" style="font-size:12px; color:var(--text-secondary);"></span>
-    <button class="btn sm" onclick="closePanel()" style="margin-left:auto;"><i class="ti ti-x"></i></button>
+<!-- Panel CRM -->
+<div class="panel" id="crm-panel">
+  <div class="ph">
+    <h3 id="crm-pname">—</h3>
+    <span id="crm-pseg" style="font-size:12px;color:var(--tx-s);"></span>
+    <button class="btn sm" onclick="closeCRMpanel()" style="margin-left:auto;"><i class="ti ti-x"></i></button>
   </div>
-  <div class="panel-body">
-    <div class="field">
-      <label>Plantilla de mensaje</label>
-      <select id="template-select" onchange="previewMsg()"></select>
+  <div class="pb">
+    <div class="field"><label>Plantilla</label><select id="tpl-sel" onchange="previewMsg()"></select></div>
+    <div class="field"><label>Vista previa</label><div class="msgbox" id="msg-preview"></div><button class="btn sm" onclick="copyMsg()" style="margin-top:6px;"><i class="ti ti-copy"></i> Copiar mensaje</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
+      <div class="field"><label>Estado</label><select id="crm-status" onchange="updateCRMstatus()"><option value="pendiente">Pendiente</option><option value="contactado">Contactado</option><option value="respondio">Respondió</option><option value="cerrado">Cerrado</option></select></div>
+      <div class="field"><label>Aranceles ($)</label><input type="number" id="crm-aran" onblur="saveCRMaran()" placeholder="45000"></div>
     </div>
-    <div class="field">
-      <label>Vista previa del mensaje</label>
-      <div class="msg-box" id="msg-preview"></div>
-      <button class="btn sm" onclick="copyMsg()" style="margin-top:6px;"><i class="ti ti-copy"></i> Copiar mensaje</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="field"><label>Comitente</label><input type="text" id="crm-comitente" onblur="saveCRMextra()" placeholder="12345"></div>
+      <div class="field"><label>Acción</label><input type="text" id="crm-accion" onblur="saveCRMextra()"></div>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px;">
-      <div class="field">
-        <label>Estado</label>
-        <select id="status-select" onchange="updateStatus()">
-          <option value="pendiente">Pendiente</option>
-          <option value="contactado">Contactado</option>
-          <option value="respondio">Respondió</option>
-          <option value="cerrado">Cerrado</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Aranceles est. ($)</label>
-        <input type="number" id="panel-aran" onblur="saveAran()" placeholder="45000">
-      </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="field"><label>Meses con Flat</label><input type="text" id="crm-meses" onblur="saveCRMextra()"></div>
+      <div class="field"><label>Último Flat contratado</label><input type="text" id="crm-ultimoflat" onblur="saveCRMextra()"></div>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-      <div class="field">
-        <label>Comitente</label>
-        <input type="text" id="panel-comitente" onblur="saveExtra()" placeholder="Ej: 12345">
-      </div>
-      <div class="field">
-        <label>Acción</label>
-        <input type="text" id="panel-accion" onblur="saveExtra()" placeholder="Ej: Ofrecer flat">
-      </div>
-    </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-      <div class="field">
-        <label>Meses con Flat</label>
-        <input type="text" id="panel-meses" onblur="saveExtra()" placeholder="Ej: 3">
-      </div>
-      <div class="field">
-        <label>Último Flat contratado</label>
-        <input type="text" id="panel-ultimoflat" onblur="saveExtra()" placeholder="Ej: marzo 2025">
-      </div>
-    </div>
-    <div class="field">
-      <label>Aclaraciones</label>
-      <input type="text" id="panel-aclaraciones" onblur="saveExtra()" placeholder="Ej: Cliente VIP, llamar por la tarde">
-    </div>
-    <div class="field">
-      <label>Notas / feedback del cliente</label>
-      <textarea id="notes-area" placeholder="Anotá aquí lo que te dijo el cliente, objeciones, intereses..." onblur="saveNote()"></textarea>
-    </div>
+    <div class="field"><label>Aclaraciones</label><input type="text" id="crm-aclaraciones" onblur="saveCRMextra()"></div>
+    <div class="field"><label>Notas / feedback</label><textarea id="crm-notas" onblur="saveCRMnote()"></textarea></div>
   </div>
-  <div class="panel-footer">
-    <button class="btn" onclick="markStatus('contactado')"><i class="ti ti-check"></i> Marcar contactado</button>
-    <button class="btn" onclick="markStatus('respondio')"><i class="ti ti-message-check"></i> Respondió</button>
-    <button class="btn" onclick="markStatus('cerrado')" style="margin-left:auto;"><i class="ti ti-lock"></i> Cerrar</button>
+  <div class="pf">
+    <button class="btn" onclick="markCRM('contactado')"><i class="ti ti-check"></i> Contactado</button>
+    <button class="btn" onclick="markCRM('respondio')"><i class="ti ti-message-check"></i> Respondió</button>
+    <button class="btn" onclick="markCRM('cerrado')" style="margin-left:auto;"><i class="ti ti-lock"></i> Cerrar</button>
+  </div>
+</div>
+
+<!-- Panel Top -->
+<div class="panel" id="top-panel">
+  <div class="ph">
+    <h3 id="top-pname">—</h3>
+    <button class="btn sm" onclick="closeTopPanel()" style="margin-left:auto;"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="pb">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="field"><label>Segmento</label><input type="text" id="tp-seg" onblur="saveTopExtra()"></div>
+      <div class="field"><label>Ingresos ($)</label><input type="number" id="tp-ing" onblur="saveTopExtra()"></div>
+      <div class="field"><label>% Total</label><input type="text" id="tp-ptotal" onblur="saveTopExtra()"></div>
+      <div class="field"><label>FLATs histórico</label><input type="text" id="tp-flats" onblur="saveTopExtra()"></div>
+      <div class="field"><label>Flat actual</label><select id="tp-flat" onchange="saveTopExtra()"><option value="">—</option><option value="si">Sí</option><option value="no">No</option></select></div>
+      <div class="field"><label>Opera desde</label><input type="text" id="tp-desde" onblur="saveTopExtra()"></div>
+      <div class="field"><label>Informe enviado</label><select id="tp-inf" onchange="saveTopExtra()"><option value="">—</option><option value="si">Sí</option><option value="no">No</option></select></div>
+      <div class="field"><label>Acción</label><input type="text" id="tp-acc" onblur="saveTopExtra()"></div>
+    </div>
+    <div class="field"><label>Estado gestión</label><select id="tp-estado" onchange="saveTopStatus()"><option value="sinGestion">Sin gestión</option><option value="enProceso">En proceso</option><option value="gestionado">Gestionado</option></select></div>
+    <div class="field"><label>Notas</label><textarea id="tp-notas" onblur="saveTopNote()"></textarea></div>
+  </div>
+  <div class="pf">
+    <button class="btn" onclick="setTopStatus('enProceso')"><i class="ti ti-loader"></i> En proceso</button>
+    <button class="btn" onclick="setTopStatus('gestionado')"><i class="ti ti-check"></i> Gestionado</button>
+    <button class="btn" onclick="deleteTop(topCurrent)" style="color:var(--tx-err);border-color:var(--tx-err);opacity:.7;margin-left:auto;"><i class="ti ti-trash"></i></button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-var clients = [];
-var currentFilter = 'todos';
-var currentClient = null;
-var sortCol = null;
-var sortDir = 1; // 1 asc, -1 desc
+// ======= CRM =======
+var crm = [], crmFilter = 'todos', crmSort = null, crmSortDir = 1, crmCurrent = null;
 
 var templates = [
-  {
-    id: 'flat-oferta',
-    name: 'Oferta Plan Flat (sin flat activo)',
-    segmentos: ['sinflat'],
-    texto: 'Hola [Nombre],\n\nTe escribo porque estuve revisando tu cuenta y quería contarte algo que puede ser relevante para vos.\n\nBasándome en tus operaciones de los últimos meses, estimamos que estás pagando aproximadamente $[X] en aranceles al 0.15% en BYMA. Con el PLAN FLAT, todas esas operaciones serían sin comisión.\n\nAdemás del ahorro en aranceles, el plan te da acceso a descubierto y a operar cauciones, lo que amplía bastante las posibilidades de cada operación.\n\nPara que lo puedas probar sin compromiso, te queremos ofrecer un mes gratis. Si operás con cierta frecuencia, el plan se paga solo. Tenemos tres opciones según tu nivel de actividad:\n\nFLAT START | $85.000 + IVA | Descubierto 150%\nFLAT ADVANCE | $160.000 + IVA | Descubierto 230%\nFLAT ELITE | $285.000 + IVA | Descubierto 320%\n\n¿Arrancamos con el mes de prueba?'
-  },
-  {
-    id: 'top-reconocimiento',
-    name: 'Reconocimiento top cliente (mes gratis)',
-    segmentos: ['top'],
-    texto: 'Buenas [Nombre],\n\nTe escribo personalmente porque quería agradecerte. Tu confianza en VetaCap no es un número para nosotros, y me parece importante que lo sepas.\n\nComo reconocimiento, te sumamos un mes de FLAT sin costo. Ya está aplicado, no tenés que hacer nada.\n\nPero más allá del regalo, quería preguntarte con sinceridad: ¿Hay algo que sientas que podemos mejorar? ¿Algo que te genere fricción, que te falte, o que creas que podríamos hacer mejor para vos?\n\nEstoy disponible para una llamada, un mensaje, lo que te sea más cómodo.\n\n¡Quedo a disposición!'
-  },
-  {
-    id: 'activo-reconocimiento',
-    name: 'Reconocimiento cliente activo (15 días gratis)',
-    segmentos: ['activo'],
-    texto: 'Buenas [Nombre],\n\nTe escribo para agradecerte. Venís operando con consistencia y eso no pasa desapercibido.\n\nComo reconocimiento, te sumamos 15 días de FLAT sin costo para que lo pruebes con tus propias operaciones. Ya está aplicado.\n\nY aprovecho para preguntarte: ¿hay algo que podamos mejorar de tu lado? Cualquier comentario nos sirve, lo tomamos en serio.\n\n¡Quedo disponible para lo que necesites!'
-  },
-  {
-    id: 'reactivacion',
-    name: 'Reactivación cliente dormido',
-    segmentos: ['dormido'],
-    texto: 'Hola [Nombre], ¿cómo estás?\n\nHacía un tiempo que no operabas y quería escribirte para ver cómo te puedo ayudar.\n\nSi hay algo que te frenó —operatoria, dudas, o simplemente el momento— me contás y lo vemos juntos.\n\nEstoy a disposición cuando quieras.'
-  },
-  {
-    id: 'remocion-flat',
-    name: 'Remoción grupo VETA FLAT',
-    segmentos: ['sinflat'],
-    texto: 'Hola [Nombre], ¿cómo estás?\n\nTe escribo porque estamos haciendo una actualización del grupo de WhatsApp "VETA FLAT" y, al revisar las cuentas, vemos que tu plan ya no está activo. Por ese motivo vamos a tener que removerte del grupo — ¡disculpas por las molestias!\n\nAprovecho para contarte algo que puede ser relevante para vos.\n\nBasándome en tus operaciones de los últimos meses, estimamos que estás pagando aproximadamente $[X] en aranceles al 0.15% en BYMA. Con el PLAN FLAT, todas esas operaciones serían sin comisión.\n\nPara que lo puedas probar sin compromiso, te queremos ofrecer un mes gratis. Tenemos tres opciones:\n\nFLAT START | $85.000 + IVA\nFLAT ADVANCE | $160.000 + IVA\nFLAT ELITE | $285.000 + IVA\n\n¿Arrancamos con el mes de prueba?'
-  }
+  { id:'flat', name:'Oferta Plan Flat', segs:['sinflat'], txt:'Hola [Nombre],\n\nTe escribo porque estuve revisando tu cuenta y quería contarte algo que puede ser relevante para vos.\n\nBasándome en tus operaciones de los últimos meses, estimamos que estás pagando aproximadamente $[X] en aranceles al 0.15% en BYMA. Con el PLAN FLAT, todas esas operaciones serían sin comisión.\n\nAdemás del ahorro en aranceles, el plan te da acceso a descubierto y a operar cauciones, lo que amplía bastante las posibilidades de cada operación.\n\nPara que lo puedas probar sin compromiso, te queremos ofrecer un mes gratis. Si operás con cierta frecuencia, el plan se paga solo. Tenemos tres opciones según tu nivel de actividad:\n\nFLAT START | $85.000 + IVA | Descubierto 150%\nFLAT ADVANCE | $160.000 + IVA | Descubierto 230%\nFLAT ELITE | $285.000 + IVA | Descubierto 320%\n\n¿Arrancamos con el mes de prueba?' },
+  { id:'top', name:'Reconocimiento top cliente (mes gratis)', segs:['top'], txt:'Buenas [Nombre],\n\nTe escribo personalmente porque quería agradecerte. Tu confianza en VetaCap no es un número para nosotros, y me parece importante que lo sepas.\n\nComo reconocimiento, te sumamos un mes de FLAT sin costo. Ya está aplicado, no tenés que hacer nada.\n\nPero más allá del regalo, quería preguntarte con sinceridad: ¿Hay algo que sientas que podemos mejorar?\n\nEstoy disponible para una llamada, un mensaje, lo que te sea más cómodo.\n\n¡Quedo a disposición!' },
+  { id:'activo', name:'Reconocimiento cliente activo (15 días gratis)', segs:['activo'], txt:'Buenas [Nombre],\n\nTe escribo para agradecerte. Venís operando con consistencia y eso no pasa desapercibido.\n\nComo reconocimiento, te sumamos 15 días de FLAT sin costo para que lo pruebes con tus propias operaciones. Ya está aplicado.\n\nY aprovecho para preguntarte: ¿hay algo que podamos mejorar de tu lado?\n\n¡Quedo disponible para lo que necesites!' },
+  { id:'reactiv', name:'Reactivación cliente dormido', segs:['dormido'], txt:'Hola [Nombre], ¿cómo estás?\n\nHacía un tiempo que no operabas y quería escribirte para ver cómo te puedo ayudar.\n\nSi hay algo que te frenó —operatoria, dudas, o simplemente el momento— me contás y lo vemos juntos.\n\nEstoy a disposición cuando quieras.' },
+  { id:'remocion', name:'Remoción grupo VETA FLAT', segs:['sinflat'], txt:'Hola [Nombre], ¿cómo estás?\n\nTe escribo porque estamos haciendo una actualización del grupo "VETA FLAT" y al revisar las cuentas, vemos que tu plan ya no está activo. Por ese motivo vamos a tener que removerte del grupo — ¡disculpas por las molestias!\n\nAprovecho para contarte que estimamos que estás pagando $[X] en aranceles al 0.15%. Con el PLAN FLAT serían sin comisión.\n\nTe ofrecemos un mes gratis para probarlo:\n\nFLAT START | $85.000 + IVA\nFLAT ADVANCE | $160.000 + IVA\nFLAT ELITE | $285.000 + IVA\n\n¿Arrancamos?' }
 ];
 
-function segLabel(s) {
-  var map = { top: 'seg-top', activo: 'seg-activo', dormido: 'seg-dormido', sinflat: 'seg-sinflat' };
-  var labels = { top: 'Top', activo: 'Activo', dormido: 'Dormido', sinflat: 'Sin flat' };
-  return '<span class="seg-pill ' + (map[s]||'') + '">' + (labels[s]||s||'—') + '</span>';
+function saveCRM() { try { localStorage.setItem('veta_crm', JSON.stringify(crm)); } catch(e){} }
+function loadCRM() { try { var s=localStorage.getItem('veta_crm'); if(s) crm=JSON.parse(s); } catch(e){} }
+
+function normCRMkey(s) {
+  var n=s.trim().toLowerCase().replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ñ/g,'n').replace(/[^a-z0-9 ]/g,'').trim().replace(/ +/g,'');
+  var a={ nombre:'nombre', comitente:'comitente', segmento:'segmento', aranceles:'aranceles', arancelesestimados:'aranceles', arancelesestimado:'aranceles',
+    planflat:'plan_flat', plan_flat:'plan_flat',
+    cantidadmesesflat:'cantidadmesesflat', mesesflat:'cantidadmesesflat', mesesFLAT:'cantidadmesesflat',
+    ultimoflatcontratado:'ultimoflatcontratado', ultimoflat:'ultimoflatcontratado',
+    aclaraciones:'aclaraciones', aclaracion:'aclaraciones',
+    accion:'accion', action:'accion',
+    ultimocontacto:'ultimocontacto', ultimocontactado:'ultimocontacto', fechacontacto:'ultimocontacto',
+    estado:'estado' };
+  return a[n]||n;
 }
 
-function statusPill(s) {
-  var map = { pendiente: 's-pendiente', contactado: 's-contactado', respondio: 's-respondio', cerrado: 's-cerrado' };
-  var labels = { pendiente: 'Pendiente', contactado: 'Contactado', respondio: 'Respondió', cerrado: 'Cerrado' };
-  return '<span class="status-pill ' + (map[s]||'s-pendiente') + '">' + (labels[s]||'Pendiente') + '</span>';
-}
-
-function renderTable() {
-  var filtered = clients.filter(function(c) {
-    if (currentFilter === 'todos') return true;
-    if (['pendiente','contactado','respondio','cerrado'].indexOf(currentFilter) > -1) return c.estado === currentFilter;
-    return c.segmento === currentFilter;
-  });
-  var tbody = document.getElementById('client-table');
-  var empty = document.getElementById('empty-state');
-  if (clients.length === 0) { tbody.innerHTML = ''; empty.style.display = ''; return; }
-  empty.style.display = 'none';
-  tbody.innerHTML = filtered.map(function(c) {
-    var idx = clients.indexOf(c);
-    var aran = c.aranceles ? '$' + Number(c.aranceles).toLocaleString('es-AR') : '—';
-    var accionPill = c.accion ? '<span class="status-pill s-contactado" style="font-size:11px;">' + c.accion + '</span>' : '—';
-    return '<tr>' +
-      '<td style="font-weight:500">' + c.nombre + '</td>' +
-      '<td style="color:var(--text-secondary);font-size:12px;">' + (c.comitente || '—') + '</td>' +
-      '<td>' + segLabel(c.segmento) + '</td>' +
-      '<td>' + accionPill + '</td>' +
-      '<td style="color:var(--text-secondary);font-size:12px;text-align:center;">' + (c.cantidadmesesflat || c.mesesflat || '—') + '</td>' +
-      '<td style="color:var(--text-secondary);font-size:12px;">' + (c.ultimoflatcontratado || c.ultimoflat || '—') + '</td>' +
-      '<td>' + aran + '</td>' +
-      '<td style="color:var(--text-secondary); font-size:12px;">' + (c.ultimocontacto || '—') + '</td>' +
-      '<td>' + statusPill(c.estado) + '</td>' +
-      '<td style="display:flex;gap:4px;"><button class="btn sm" onclick="openPanel(' + idx + ')"><i class="ti ti-message"></i> Gestionar</button><button class="btn sm" onclick="deleteClient(' + idx + ')" style="color:var(--text-danger);border-color:var(--text-danger);opacity:0.7;" title="Borrar cliente"><i class="ti ti-trash"></i></button></td>' +
-    '</tr>';
-  }).join('');
-  updateMetrics();
-  saveStorage();
-}
-
-function updateMetrics() {
-  document.getElementById('m-total').textContent = clients.length;
-  document.getElementById('m-pending').textContent = clients.filter(function(c){return c.estado==='pendiente';}).length;
-  document.getElementById('m-sent').textContent = clients.filter(function(c){return c.estado==='contactado';}).length;
-  document.getElementById('m-replied').textContent = clients.filter(function(c){return c.estado==='respondio';}).length;
-  document.getElementById('badge-total').textContent = clients.length;
-}
-
-function setFilter(f, el) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-chip').forEach(function(x){x.classList.remove('active');});
-  el.classList.add('active');
-  renderTable();
-}
-
-function openPanel(idx) {
-  currentClient = idx;
-  var c = clients[idx];
-  document.getElementById('panel-name').textContent = c.nombre;
-  document.getElementById('panel-seg').textContent = { top:'Top cliente', activo:'Activo', dormido:'Dormido', sinflat:'Sin flat' }[c.segmento] || '';
-  document.getElementById('panel-aran').value = c.aranceles || '';
-
-  var sel = document.getElementById('template-select');
-  sel.innerHTML = templates.map(function(t){
-    return '<option value="' + t.id + '">' + t.name + '</option>';
-  }).join('');
-  var suggested = templates.findIndex(function(t){ return t.segmentos.indexOf(c.segmento) > -1; });
-  if (suggested > -1) sel.selectedIndex = suggested;
-
-  previewMsg();
-  document.getElementById('status-select').value = c.estado || 'pendiente';
-  document.getElementById('notes-area').value = c.notas || '';
-  document.getElementById('panel-comitente').value = c.comitente || '';
-  document.getElementById('panel-accion').value = c.accion || '';
-  document.getElementById('panel-meses').value = c.cantidadmesesflat || c.mesesflat || '';
-  document.getElementById('panel-ultimoflat').value = c.ultimoflatcontratado || c.ultimoflat || '';
-  document.getElementById('panel-aclaraciones').value = c.aclaraciones || '';
-  document.getElementById('detail-panel').classList.add('open');
-}
-
-function closePanel() { document.getElementById('detail-panel').classList.remove('open'); }
-
-function previewMsg() {
-  if (currentClient === null) return;
-  var c = clients[currentClient];
-  var tid = document.getElementById('template-select').value;
-  var tpl = templates.find(function(t){return t.id === tid;});
-  if (!tpl) return;
-  var aran = c.aranceles ? Number(c.aranceles).toLocaleString('es-AR') : '[X]';
-  var msg = tpl.texto.replace(/\[Nombre\]/g, c.nombre).replace(/\[X\]/g, aran);
-  document.getElementById('msg-preview').textContent = msg;
-}
-
-function copyMsg() {
-  var text = document.getElementById('msg-preview').textContent;
-  navigator.clipboard.writeText(text).then(function(){
-    showToast('Mensaje copiado');
-  }).catch(function(){
-    showToast('No se pudo copiar automáticamente');
-  });
-}
-
-function updateStatus() {
-  if (currentClient === null) return;
-  var s = document.getElementById('status-select').value;
-  clients[currentClient].estado = s;
-  if (s === 'contactado') clients[currentClient].ultimocontacto = new Date().toLocaleDateString('es-AR');
-  renderTable();
-}
-
-function saveExtra() {
-  if (currentClient === null) return;
-  var c = clients[currentClient];
-  c.comitente = document.getElementById('panel-comitente').value;
-  c.accion = document.getElementById('panel-accion').value;
-  c.cantidadmesesflat = document.getElementById('panel-meses').value;
-  c.ultimoflatcontratado = document.getElementById('panel-ultimoflat').value;
-  c.aclaraciones = document.getElementById('panel-aclaraciones').value;
-  renderTable();
-  saveStorage();
-}
-
-function saveNote() {
-  if (currentClient === null) return;
-  clients[currentClient].notas = document.getElementById('notes-area').value;
-  saveStorage();
-}
-
-function saveAran() {
-  if (currentClient === null) return;
-  clients[currentClient].aranceles = document.getElementById('panel-aran').value;
-  previewMsg();
-  renderTable();
-  saveStorage();
-}
-
-function markStatus(s) {
-  if (currentClient === null) return;
-  clients[currentClient].estado = s;
-  if (s === 'contactado') clients[currentClient].ultimocontacto = new Date().toLocaleDateString('es-AR');
-  document.getElementById('status-select').value = s;
-  renderTable();
-  showToast({ contactado: 'Marcado como contactado', respondio: 'Marcado como respondió', cerrado: 'Cerrado' }[s] || '');
-}
-
-function sortBy(col) {
-  if (sortCol === col) {
-    sortDir *= -1;
-  } else {
-    sortCol = col;
-    sortDir = 1;
+function parseCSV(raw, normFn, requiredField) {
+  raw = raw.replace(/^\uFEFF/,'');
+  var lines = raw.split(/\r?\n/).filter(function(l){return l.trim();});
+  if(lines.length<2) return null;
+  var sc={'\t':lines[0].split('\t').length-1,';':lines[0].split(';').length-1,',':lines[0].split(',').length-1};
+  var sep=Object.keys(sc).reduce(function(a,b){return sc[a]>=sc[b]?a:b;});
+  var headers=lines[0].split(sep).map(normFn);
+  function splitRow(l){var cols=[],cur='',inQ=false;for(var i=0;i<l.length;i++){var ch=l[i];if(ch==='"'){inQ=!inQ;}else if(ch===sep&&!inQ){cols.push(cur);cur='';}else{cur+=ch;}}cols.push(cur);return cols.map(function(c){return c.trim().replace(/^"|"$/g,'');});}
+  var rows=[];
+  for(var i=1;i<lines.length;i++){
+    var cols=splitRow(lines[i]);
+    var obj={};
+    headers.forEach(function(h,j){if(h)obj[h]=(cols[j]||'').trim();});
+    if(requiredField && !obj[requiredField]) continue;
+    rows.push(obj);
   }
-  clients.sort(function(a, b) {
-    var va = (a[col] || '').toString().toLowerCase();
-    var vb = (b[col] || '').toString().toLowerCase();
-    // Intentar comparación numérica para aranceles y meses
-    var na = parseFloat(va.replace(/[^0-9.]/g,''));
-    var nb = parseFloat(vb.replace(/[^0-9.]/g,''));
-    if (!isNaN(na) && !isNaN(nb)) return (na - nb) * sortDir;
-    if (va < vb) return -1 * sortDir;
-    if (va > vb) return 1 * sortDir;
-    return 0;
-  });
-  // Actualizar clases en headers
-  document.querySelectorAll('th.sortable').forEach(function(th) {
-    th.classList.remove('asc','desc');
-  });
-  var ths = document.querySelectorAll('th.sortable');
-  var cols = ['nombre','comitente','segmento','accion','cantidadmesesflat','ultimoflatcontratado','aranceles','ultimocontacto','estado'];
-  var idx = cols.indexOf(col);
-  if (idx > -1 && ths[idx]) ths[idx].classList.add(sortDir === 1 ? 'asc' : 'desc');
-  renderTable();
+  return {rows:rows, sep:sep};
 }
 
-function clearAll() {
-  if (clients.length === 0) { showToast('No hay clientes para borrar'); return; }
-  if (!confirm('¿Borrar todos los ' + clients.length + ' clientes? Esta acción no se puede deshacer.')) return;
-  clients = [];
-  currentClient = null;
-  closePanel();
-  document.getElementById('campaign-label').textContent = '—';
-  try { localStorage.removeItem('veta_crm_clients'); localStorage.removeItem('veta_crm_campaign'); } catch(e) {}
-  renderTable();
-  showToast('Lista borrada');
-}
-
-function deleteClient(idx) {
-  var nombre = clients[idx] ? clients[idx].nombre : 'este cliente';
-  if (!confirm('¿Borrar a ' + nombre + '?')) return;
-  if (currentClient === idx) { closePanel(); currentClient = null; }
-  else if (currentClient > idx) { currentClient--; }
-  clients.splice(idx, 1);
-  renderTable();
-  showToast(nombre + ' eliminado');
-}
-
-function showView(v) {
-  ['pipeline','import','templates'].forEach(function(x){
-    document.getElementById('view-'+x).style.display = 'none';
-  });
-  document.getElementById('view-'+v).style.display = '';
-  var titles = { pipeline: 'Pipeline de contactos', import: 'Importar clientes', templates: 'Plantillas de mensajes' };
-  document.getElementById('view-title').textContent = titles[v];
-  ['pipeline','import','templates'].forEach(function(x){
-    document.getElementById('nav-'+x).classList.toggle('active', x===v);
-  });
-  if (v === 'templates') renderTemplates();
-}
-
-function renderTemplates() {
-  document.getElementById('templates-list').innerHTML = templates.map(function(t){
-    var preview = t.texto.length > 220 ? t.texto.substring(0,220) + '…' : t.texto;
-    return '<div class="tpl-card">' +
-      '<div class="tpl-name">' + t.name + '</div>' +
-      '<div class="tpl-seg">Segmentos: ' + t.segmentos.join(', ') + '</div>' +
-      '<div class="tpl-preview">' + preview + '</div>' +
-    '</div>';
-  }).join('');
-}
-
-function handleCSV(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-
-  function parseContent(raw) {
-    // Quitar BOM si existe
-    raw = raw.replace(/^\uFEFF/, '');
-    var lines = raw.split(/\r?\n/).filter(function(l){ return l.trim(); });
-    if (lines.length < 2) { showToast('CSV vacío o sin datos'); return; }
-
-    // Auto-detectar separador: tab, punto y coma, o coma
-    var sepCounts = {
-      '\t': lines[0].split('\t').length - 1,
-      ';':  lines[0].split(';').length - 1,
-      ',':  lines[0].split(',').length - 1
-    };
-    var sep = Object.keys(sepCounts).reduce(function(a,b){ return sepCounts[a] >= sepCounts[b] ? a : b; });
-
-    // Normalizar headers: minúsculas, sin tildes, sin caracteres raros
-    function normalizeKey(s) {
-      var norm = s.trim().toLowerCase()
-        .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ñ/g,'n')
-        .replace(/[^a-z0-9_ ]/g,'').trim().replace(/ +/g,'');
-      // Aliases para columnas conocidas
-      var aliases = {
-        'cantidadmesesflat': 'cantidadmesesflat',
-        'cantidadmesflat': 'cantidadmesesflat',
-        'mesesflat': 'cantidadmesesflat',
-        'mesesconflat': 'cantidadmesesflat',
-        'ultimoflatcontratado': 'ultimoflatcontratado',
-        'ultimoflat': 'ultimoflatcontratado',
-        'aclaracion': 'aclaraciones',
-        'aclaraciones': 'aclaraciones',
-        'accion': 'accion',
-        'action': 'accion',
-        'comitente': 'comitente',
-        'nombre': 'nombre',
-        'segmento': 'segmento',
-        'aranceles': 'aranceles',
-        'planflat': 'plan_flat',
-        'plan_flat': 'plan_flat',
-        'ultimocontacto': 'ultimocontacto',
-        'ultimocontactado': 'ultimocontacto',
-        'fechacontacto': 'ultimocontacto',
-        'fechaultimocontacto': 'ultimocontacto',
-        'ultimafechacontacto': 'ultimocontacto',
-        'ultimocontacto': 'ultimocontacto',
-      };
-      return aliases[norm] || norm;
-    }
-    var headers = lines[0].split(sep).map(normalizeKey);
-
-    // Normalizar valor de segmento
-    function normSeg(s) {
-      s = (s||'').toLowerCase().trim()
-        .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u');
-      if (s === 'sin flat' || s === 'sinflat' || s === 'sin_flat') return 'sinflat';
-      if (s === 'top' || s === 'top cliente' || s === 'top_cliente') return 'top';
-      if (s === 'activo') return 'activo';
-      if (s === 'dormido') return 'dormido';
-      return s || 'activo';
-    }
-
-    // Parsear fila respetando campos entre comillas que pueden contener el separador
-    function splitRow(line, sep) {
-      var cols = [], cur = '', inQ = false;
-      for (var i = 0; i < line.length; i++) {
-        var ch = line[i];
-        if (ch === '"') { inQ = !inQ; }
-        else if (ch === sep && !inQ) { cols.push(cur); cur = ''; }
-        else { cur += ch; }
-      }
-      cols.push(cur);
-      return cols.map(function(c){ return c.trim().replace(/^"|"$/g,''); });
-    }
-
-    var added = 0;
-    for (var i = 1; i < lines.length; i++) {
-      var cols = splitRow(lines[i], sep);
-      var obj = { estado: 'pendiente', notas: '', ultimocontacto: '' };
-      headers.forEach(function(h, j) {
-        if (h) obj[h] = (cols[j] || '').trim();
-      });
-      if (!obj.nombre) continue;
+function handleCRMcsv(e) {
+  var file=e.target.files[0]; if(!file) return;
+  function go(raw) {
+    var r=parseCSV(raw, normCRMkey, 'nombre');
+    if(!r||r.rows.length===0){showToast('No se encontró columna "nombre"');return;}
+    r.rows.forEach(function(obj){
+      obj.estado = obj.estado||'pendiente';
+      obj.notas = obj.notas||'';
+      obj.ultimocontacto = obj.ultimocontacto||'';
+      obj.aranceles = (obj.aranceles||'').replace(/[^0-9]/g,'');
       obj.segmento = normSeg(obj.segmento);
-      // Limpiar aranceles: quedarse solo con dígitos
-      obj.aranceles = (obj.aranceles || '').replace(/[^0-9]/g, '');
-      clients.push(obj);
-      added++;
-    }
-
-    if (added === 0) {
-      showToast('No se encontró la columna "nombre" — revisá el CSV');
-      return;
-    }
-    document.getElementById('campaign-label').textContent = file.name.replace('.csv','');
-    showToast(added + ' clientes importados (sep: "' + sep + '")');
-    showView('pipeline');
-    renderTable();
+      crm.push(obj);
+    });
+    document.getElementById('campaign-label').textContent=file.name.replace('.csv','');
+    saveCRM(); showToast(r.rows.length+' clientes importados (sep: "'+(r.sep==='\t'?'tab':r.sep)+'")');
+    showView('pipeline'); renderCRM();
   }
-
-  // Intentar UTF-8 primero; si hay caracteres corruptos, reintentar con latin-1
-  var r1 = new FileReader();
-  r1.onload = function(ev) {
-    var raw = ev.target.result;
-    // Heurística: si hay símbolos de reemplazo (U+FFFD) probamos latin-1
-    if (raw.indexOf('\uFFFD') > -1) {
-      var r2 = new FileReader();
-      r2.onload = function(ev2) { parseContent(ev2.target.result); };
-      r2.readAsText(file, 'windows-1252');
-    } else {
-      parseContent(raw);
-    }
-  };
-  r1.readAsText(file, 'UTF-8');
+  var rd=new FileReader();
+  rd.onload=function(ev){var raw=ev.target.result;if(raw.indexOf('\uFFFD')>-1){var r2=new FileReader();r2.onload=function(ev2){go(ev2.target.result);};r2.readAsText(file,'windows-1252');}else{go(raw);}};
+  rd.readAsText(file,'UTF-8');
 }
 
-function addManual() {
-  var nombre = document.getElementById('mn-nombre').value.trim();
-  if (!nombre) { showToast('Ingresá un nombre'); return; }
-  clients.push({
-    nombre: nombre,
-    segmento: document.getElementById('mn-seg').value,
-    aranceles: document.getElementById('mn-aran').value || '',
-    plan_flat: document.getElementById('mn-flat').value,
-    estado: 'pendiente',
-    notas: '',
-    ultimocontacto: ''
+function normSeg(s) {
+  s=(s||'').toLowerCase().trim().replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u');
+  if(s==='sin flat'||s==='sinflat'||s==='sin_flat'||s==='sf') return 'sinflat';
+  if(s==='top'||s==='top cliente') return 'top';
+  if(s==='activo') return 'activo';
+  if(s==='dormido') return 'dormido';
+  return s||'activo';
+}
+
+function segPill(s){var m={top:'seg-top',activo:'seg-act',dormido:'seg-dorm',sinflat:'seg-sf'};var l={top:'Top',activo:'Activo',dormido:'Dormido',sinflat:'Sin flat'};return '<span class="pill '+(m[s]||'')+'">'+(l[s]||s||'—')+'</span>';}
+function statPill(s){var m={pendiente:'p-pend',contactado:'p-cont',respondio:'p-resp',cerrado:'p-cerr'};var l={pendiente:'Pendiente',contactado:'Contactado',respondio:'Respondió',cerrado:'Cerrado'};return '<span class="pill '+(m[s]||'p-pend')+'">'+(l[s]||'Pendiente')+'</span>';}
+
+function setFilter(f,el){crmFilter=f;document.querySelectorAll('#crm-filters .chip').forEach(function(x){x.classList.remove('active');});el.classList.add('active');renderCRM();}
+
+function renderCRM(){
+  var fil=crm.filter(function(c){
+    if(crmFilter==='todos') return true;
+    if(['pendiente','contactado','respondio','cerrado'].indexOf(crmFilter)>-1) return c.estado===crmFilter;
+    return c.segmento===crmFilter;
   });
-  document.getElementById('mn-nombre').value = '';
-  document.getElementById('mn-aran').value = '';
-  showToast('Cliente agregado');
-  showView('pipeline');
-  renderTable();
+  document.getElementById('badge-total').textContent=crm.length;
+  document.getElementById('m-total').textContent=crm.length;
+  document.getElementById('m-pend').textContent=crm.filter(function(c){return c.estado==='pendiente';}).length;
+  document.getElementById('m-cont').textContent=crm.filter(function(c){return c.estado==='contactado';}).length;
+  document.getElementById('m-resp').textContent=crm.filter(function(c){return c.estado==='respondio';}).length;
+  var tb=document.getElementById('crm-tbody'), em=document.getElementById('crm-empty');
+  if(crm.length===0){tb.innerHTML='';em.style.display='';return;} em.style.display='none';
+  tb.innerHTML=fil.map(function(c){
+    var idx=crm.indexOf(c);
+    return '<tr>'+
+      '<td style="font-weight:500">'+(c.nombre||'—')+'</td>'+
+      '<td style="color:var(--tx-s);font-size:12px">'+(c.comitente||'—')+'</td>'+
+      '<td>'+segPill(c.segmento)+'</td>'+
+      '<td style="font-size:12px">'+(c.accion||'—')+'</td>'+
+      '<td style="text-align:center;font-size:12px">'+(c.cantidadmesesflat||'—')+'</td>'+
+      '<td style="font-size:12px;color:var(--tx-s)">'+(c.ultimoflatcontratado||'—')+'</td>'+
+      '<td>'+(c.aranceles?'$'+Number(c.aranceles).toLocaleString('es-AR'):'—')+'</td>'+
+      '<td style="font-size:12px;color:var(--tx-s)">'+(c.ultimocontacto||'—')+'</td>'+
+      '<td>'+statPill(c.estado)+'</td>'+
+      '<td style="display:flex;gap:4px">'+
+        '<button class="btn sm" onclick="openCRM('+idx+')"><i class="ti ti-message"></i> Gestionar</button>'+
+        '<button class="btn sm" onclick="deleteCRM('+idx+')" style="color:var(--tx-err);border-color:var(--tx-err);opacity:.7"><i class="ti ti-trash"></i></button>'+
+      '</td></tr>';
+  }).join('');
+  saveCRM();
 }
 
-function exportCSV() {
-  if (clients.length === 0) { showToast('No hay clientes para exportar'); return; }
-  var headers = ['nombre','comitente','segmento','aranceles','plan_flat','cantidadmesesflat','ultimoflatcontratado','aclaraciones','accion','estado','ultimocontacto','notas'];
-  var rows = clients.map(function(c){
-    return headers.map(function(h){ return '"' + (c[h]||'').toString().replace(/"/g,'""') + '"'; }).join(',');
+function sortCRM(col){crmSort===col?crmSortDir*=-1:(crmSort=col,crmSortDir=1);crm.sort(function(a,b){var va=(a[col]||'').toString().toLowerCase(),vb=(b[col]||'').toString().toLowerCase();var na=parseFloat(va.replace(/[^0-9.]/g,'')),nb=parseFloat(vb.replace(/[^0-9.]/g,''));if(!isNaN(na)&&!isNaN(nb))return(na-nb)*crmSortDir;return va<vb?-1*crmSortDir:va>vb?1*crmSortDir:0;});renderCRM();}
+
+function openCRM(idx){
+  crmCurrent=idx; var c=crm[idx];
+  document.getElementById('crm-pname').textContent=c.nombre;
+  document.getElementById('crm-pseg').textContent={top:'Top',activo:'Activo',dormido:'Dormido',sinflat:'Sin flat'}[c.segmento]||'';
+  document.getElementById('crm-aran').value=c.aranceles||'';
+  document.getElementById('crm-comitente').value=c.comitente||'';
+  document.getElementById('crm-accion').value=c.accion||'';
+  document.getElementById('crm-meses').value=c.cantidadmesesflat||'';
+  document.getElementById('crm-ultimoflat').value=c.ultimoflatcontratado||'';
+  document.getElementById('crm-aclaraciones').value=c.aclaraciones||'';
+  document.getElementById('crm-notas').value=c.notas||'';
+  document.getElementById('crm-status').value=c.estado||'pendiente';
+  var sel=document.getElementById('tpl-sel');
+  sel.innerHTML=templates.map(function(t){return '<option value="'+t.id+'">'+t.name+'</option>';}).join('');
+  var si=templates.findIndex(function(t){return t.segs.indexOf(c.segmento)>-1;});
+  if(si>-1) sel.selectedIndex=si;
+  previewMsg();
+  document.getElementById('crm-panel').classList.add('open');
+}
+function closeCRMpanel(){document.getElementById('crm-panel').classList.remove('open');}
+
+function previewMsg(){
+  if(crmCurrent===null) return;
+  var c=crm[crmCurrent];
+  var tid=document.getElementById('tpl-sel').value;
+  var tpl=templates.find(function(t){return t.id===tid;});
+  if(!tpl) return;
+  var msg=tpl.txt.replace(/\[Nombre\]/g,c.nombre).replace(/\[X\]/g,c.aranceles?Number(c.aranceles).toLocaleString('es-AR'):'[X]');
+  document.getElementById('msg-preview').textContent=msg;
+}
+function copyMsg(){var t=document.getElementById('msg-preview').textContent;navigator.clipboard.writeText(t).then(function(){showToast('Mensaje copiado');});}
+
+function updateCRMstatus(){if(crmCurrent===null)return;crm[crmCurrent].estado=document.getElementById('crm-status').value;if(crm[crmCurrent].estado==='contactado')crm[crmCurrent].ultimocontacto=new Date().toLocaleDateString('es-AR');renderCRM();}
+function markCRM(s){if(crmCurrent===null)return;crm[crmCurrent].estado=s;if(s==='contactado')crm[crmCurrent].ultimocontacto=new Date().toLocaleDateString('es-AR');document.getElementById('crm-status').value=s;renderCRM();showToast({contactado:'Marcado contactado',respondio:'Respondió',cerrado:'Cerrado'}[s]||'');}
+function saveCRMaran(){if(crmCurrent===null)return;crm[crmCurrent].aranceles=document.getElementById('crm-aran').value;previewMsg();renderCRM();}
+function saveCRMextra(){if(crmCurrent===null)return;var c=crm[crmCurrent];c.comitente=document.getElementById('crm-comitente').value;c.accion=document.getElementById('crm-accion').value;c.cantidadmesesflat=document.getElementById('crm-meses').value;c.ultimoflatcontratado=document.getElementById('crm-ultimoflat').value;c.aclaraciones=document.getElementById('crm-aclaraciones').value;renderCRM();}
+function saveCRMnote(){if(crmCurrent===null)return;crm[crmCurrent].notas=document.getElementById('crm-notas').value;saveCRM();}
+function deleteCRM(idx){if(!confirm('¿Borrar a '+(crm[idx]?crm[idx].nombre:'este cliente')+'?'))return;if(crmCurrent===idx){closeCRMpanel();crmCurrent=null;}else if(crmCurrent>idx){crmCurrent--;}crm.splice(idx,1);renderCRM();showToast('Cliente eliminado');}
+function clearAll(){if(crm.length===0){showToast('No hay clientes');return;}if(!confirm('¿Borrar los '+crm.length+' clientes?'))return;crm=[];crmCurrent=null;closeCRMpanel();try{localStorage.removeItem('veta_crm');}catch(e){}renderCRM();showToast('Lista borrada');}
+function exportCSV(){if(crm.length===0){showToast('No hay datos');return;}var h=['nombre','comitente','segmento','aranceles','plan_flat','cantidadmesesflat','ultimoflatcontratado','aclaraciones','accion','estado','ultimocontacto','notas'];var rows=crm.map(function(c){return h.map(function(k){return '"'+(c[k]||'').replace(/"/g,'""')+'"';}).join(',');});var csv='\uFEFF'+[h.join(',')].concat(rows).join('\r\n');var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='veta_crm_'+new Date().toISOString().slice(0,10)+'.csv';a.click();showToast('CSV exportado');}
+function addManual(){var nom=document.getElementById('mn-nom').value.trim();if(!nom){showToast('Ingresá un nombre');return;}crm.push({nombre:nom,segmento:document.getElementById('mn-seg').value,aranceles:document.getElementById('mn-aran').value||'',plan_flat:document.getElementById('mn-flat').value,estado:'pendiente',notas:'',ultimocontacto:''});document.getElementById('mn-nom').value='';document.getElementById('mn-aran').value='';showToast('Cliente agregado');showView('pipeline');renderCRM();}
+
+function renderTemplates(){document.getElementById('tpl-list').innerHTML=templates.map(function(t){return '<div class="tpl-card"><div class="tn">'+t.name+'</div><div class="ts">Segmentos: '+t.segs.join(', ')+'</div><div class="tp">'+(t.txt.length>220?t.txt.substring(0,220)+'…':t.txt)+'</div></div>';}).join('');}
+
+// ======= TOP CLIENTES =======
+var top=[], topFilter='todos', topSortCol=null, topSortDir=1, topCurrent=null;
+
+function saveTop(){try{localStorage.setItem('veta_top',JSON.stringify(top));}catch(e){}}
+function loadTop(){try{var s=localStorage.getItem('veta_top');if(s)top=JSON.parse(s);}catch(e){}}
+
+function normTopKey(s){
+  var n=s.trim().toLowerCase().replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ñ/g,'n').replace(/[^a-z0-9 ]/g,'').trim().replace(/ +/g,'');
+  var a={comitente:'comitente',segmento:'segmento',ingresos:'ingresos',
+    total:'ptotal',ptotal:'ptotal',porcentajetotal:'ptotal',
+    cantidadflatshistorico:'flatshistorico',flatshistorico:'flatshistorico',flathistorico:'flatshistorico',cantidadflathistorico:'flatshistorico',
+    flatactual:'flatactual',tieneflat:'flatactual',
+    desdecuandoopera:'desdecuandoopera',operadesde:'desdecuandoopera',
+    informeenviado:'informeenviado',informe:'informeenviado',
+    accion:'accion',estado:'estado'};
+  return a[n]||n;
+}
+
+function handleTopCSV(e){
+  var file=e.target.files[0];if(!file)return;
+  function go(raw){
+    var r=parseCSV(raw,normTopKey,'comitente');
+    if(!r||r.rows.length===0){showToast('No se encontró columna "Comitente"');return;}
+    r.rows.forEach(function(obj){
+      obj.estado=obj.estado||'sinGestion';obj.notas=obj.notas||'';
+      ['flatactual','informeenviado'].forEach(function(k){var v=(obj[k]||'').toLowerCase();obj[k]=(v==='si'||v==='sí'||v==='yes'||v==='s'||v==='1')?'si':(v==='no'||v==='n'||v==='0')?'no':v;});
+      obj.ingresos=(obj.ingresos||'').replace(/[^0-9.]/g,'');
+      top.push(obj);
+    });
+    saveTop();showToast(r.rows.length+' clientes top importados');showView('top');renderTop();
+  }
+  var rd=new FileReader();
+  rd.onload=function(ev){var raw=ev.target.result;if(raw.indexOf('\uFFFD')>-1){var r2=new FileReader();r2.onload=function(ev2){go(ev2.target.result);};r2.readAsText(file,'windows-1252');}else{go(raw);}};
+  rd.readAsText(file,'UTF-8');
+}
+
+function boolPill(v){if(v==='si')return '<span class="pill p-gest">Sí</span>';if(v==='no')return '<span class="pill p-sin">No</span>';return '<span style="color:var(--tx-t)">—</span>';}
+function topStatPill(s){var m={sinGestion:['p-sin','Sin gestión'],enProceso:['p-proc','En proceso'],gestionado:['p-gest','Gestionado']};var d=m[s]||m['sinGestion'];return '<span class="pill '+d[0]+'">'+d[1]+'</span>';}
+
+function setTopFilter(f,el){topFilter=f;document.querySelectorAll('#top-filters .chip').forEach(function(x){x.classList.remove('active');});el.classList.add('active');renderTop();}
+
+function renderTop(){
+  var fil=top.filter(function(c){
+    if(topFilter==='todos')return true;
+    if(['sinGestion','enProceso','gestionado'].indexOf(topFilter)>-1)return c.estado===topFilter;
+    if(topFilter==='flatsi')return c.flatactual==='si';
+    if(topFilter==='flatno')return c.flatactual==='no';
+    if(topFilter==='informesi')return c.informeenviado==='si';
+    if(topFilter==='informeno')return c.informeenviado==='no';
+    return true;
   });
-  var csv = '\uFEFF' + [headers.join(',')].concat(rows).join('\r\n');
-  var a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'veta_crm_' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click();
-  showToast('CSV exportado');
+  document.getElementById('badge-top').textContent=top.length;
+  document.getElementById('tm-total').textContent=top.length;
+  document.getElementById('tm-sin').textContent=top.filter(function(c){return c.estado==='sinGestion';}).length;
+  document.getElementById('tm-proc').textContent=top.filter(function(c){return c.estado==='enProceso';}).length;
+  document.getElementById('tm-gest').textContent=top.filter(function(c){return c.estado==='gestionado';}).length;
+  var tb=document.getElementById('top-tbody'),em=document.getElementById('top-empty');
+  if(top.length===0){tb.innerHTML='';em.style.display='';return;}em.style.display='none';
+  tb.innerHTML=fil.map(function(c){
+    var idx=top.indexOf(c);
+    var ing=c.ingresos?'$'+Number(c.ingresos).toLocaleString('es-AR'):'—';
+    return '<tr>'+
+      '<td style="font-weight:500">'+(c.comitente||'—')+'</td>'+
+      '<td style="font-size:12px;color:var(--tx-s)">'+(c.segmento||'—')+'</td>'+
+      '<td>'+ing+'</td>'+
+      '<td style="text-align:center;font-size:12px">'+(c.ptotal||'—')+'</td>'+
+      '<td style="text-align:center;font-size:12px">'+(c.flatshistorico||'—')+'</td>'+
+      '<td style="text-align:center">'+boolPill(c.flatactual)+'</td>'+
+      '<td style="font-size:12px;color:var(--tx-s)">'+(c.desdecuandoopera||'—')+'</td>'+
+      '<td style="text-align:center">'+boolPill(c.informeenviado)+'</td>'+
+      '<td style="font-size:12px">'+(c.accion||'—')+'</td>'+
+      '<td>'+topStatPill(c.estado)+'</td>'+
+      '<td style="display:flex;gap:4px">'+
+        '<button class="btn sm" onclick="openTop('+idx+')"><i class="ti ti-message"></i> Gestionar</button>'+
+        '<button class="btn sm" onclick="deleteTop('+idx+')" style="color:var(--tx-err);border-color:var(--tx-err);opacity:.7"><i class="ti ti-trash"></i></button>'+
+      '</td></tr>';
+  }).join('');
+  saveTop();
 }
 
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+function sortTop(col){topSortCol===col?topSortDir*=-1:(topSortCol=col,topSortDir=1);top.sort(function(a,b){var va=(a[col]||'').toString().toLowerCase(),vb=(b[col]||'').toString().toLowerCase();var na=parseFloat(va.replace(/[^0-9.]/g,'')),nb=parseFloat(vb.replace(/[^0-9.]/g,''));if(!isNaN(na)&&!isNaN(nb))return(na-nb)*topSortDir;return va<vb?-1*topSortDir:va>vb?1*topSortDir:0;});renderTop();}
+
+function openTop(idx){
+  topCurrent=idx;var c=top[idx];
+  document.getElementById('top-pname').textContent='Comitente: '+c.comitente;
+  document.getElementById('tp-seg').value=c.segmento||'';
+  document.getElementById('tp-ing').value=c.ingresos||'';
+  document.getElementById('tp-ptotal').value=c.ptotal||'';
+  document.getElementById('tp-flats').value=c.flatshistorico||'';
+  document.getElementById('tp-flat').value=c.flatactual||'';
+  document.getElementById('tp-desde').value=c.desdecuandoopera||'';
+  document.getElementById('tp-inf').value=c.informeenviado||'';
+  document.getElementById('tp-acc').value=c.accion||'';
+  document.getElementById('tp-notas').value=c.notas||'';
+  document.getElementById('tp-estado').value=c.estado||'sinGestion';
+  document.getElementById('top-panel').classList.add('open');
+}
+function closeTopPanel(){document.getElementById('top-panel').classList.remove('open');}
+function saveTopExtra(){if(topCurrent===null)return;var c=top[topCurrent];c.segmento=document.getElementById('tp-seg').value;c.ingresos=document.getElementById('tp-ing').value;c.ptotal=document.getElementById('tp-ptotal').value;c.flatshistorico=document.getElementById('tp-flats').value;c.desdecuandoopera=document.getElementById('tp-desde').value;c.accion=document.getElementById('tp-acc').value;c.flatactual=document.getElementById('tp-flat').value;c.informeenviado=document.getElementById('tp-inf').value;renderTop();}
+function saveTopNote(){if(topCurrent===null)return;top[topCurrent].notas=document.getElementById('tp-notas').value;saveTop();}
+function saveTopStatus(){if(topCurrent===null)return;top[topCurrent].estado=document.getElementById('tp-estado').value;renderTop();}
+function setTopStatus(s){if(topCurrent===null)return;top[topCurrent].estado=s;document.getElementById('tp-estado').value=s;renderTop();showToast({enProceso:'En proceso',gestionado:'Gestionado'}[s]||'');}
+function deleteTop(idx){if(idx===null||idx===undefined)return;var n=top[idx]?top[idx].comitente:'este cliente';if(!confirm('¿Borrar comitente '+n+'?'))return;if(topCurrent===idx){closeTopPanel();topCurrent=null;}else if(topCurrent>idx){topCurrent--;}top.splice(idx,1);renderTop();showToast('Cliente eliminado');}
+function clearTop(){if(top.length===0){showToast('No hay clientes');return;}if(!confirm('¿Borrar los '+top.length+' clientes top?'))return;top=[];topCurrent=null;closeTopPanel();try{localStorage.removeItem('veta_top');}catch(e){}renderTop();showToast('Lista top borrada');}
+function exportTopCSV(){if(top.length===0){showToast('No hay datos');return;}var h=['comitente','segmento','ingresos','ptotal','flatshistorico','flatactual','desdecuandoopera','informeenviado','accion','estado','notas'];var rows=top.map(function(c){return h.map(function(k){return '"'+(c[k]||'').toString().replace(/"/g,'""')+'"';}).join(',');});var csv='\uFEFF'+[h.join(',')].concat(rows).join('\r\n');var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='veta_top_'+new Date().toISOString().slice(0,10)+'.csv';a.click();showToast('CSV exportado');}
+
+// ======= NAV =======
+var allViews=['pipeline','import','templates','top','topimport'];
+function showView(v){
+  allViews.forEach(function(x){document.getElementById('view-'+x).style.display='none';});
+  document.getElementById('view-'+v).style.display='';
+  var titles={pipeline:'Pipeline de contactos',import:'Importar clientes',templates:'Plantillas de mensajes',top:'Top Clientes',topimport:'Importar Top Clientes'};
+  document.getElementById('view-title').textContent=titles[v]||v;
+  allViews.concat(['top-import']).forEach(function(x){var el=document.getElementById('nav-'+x);if(el)el.classList.remove('active');});
+  var navId='nav-'+v;
+  var navEl=document.getElementById(navId);if(navEl)navEl.classList.add('active');
+  var isTop=(v==='top'||v==='topimport');
+  document.getElementById('tb-crm').style.display=isTop?'none':'flex';
+  document.getElementById('tb-top').style.display=isTop?'flex':'none';
+  if(v==='templates')renderTemplates();
 }
 
-function saveStorage() {
-  try { localStorage.setItem('veta_crm_clients', JSON.stringify(clients));
-    if (document.getElementById('campaign-label').textContent !== '—')
-      localStorage.setItem('veta_crm_campaign', document.getElementById('campaign-label').textContent);
-  } catch(e) {}
-}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
 
-function loadStorage() {
-  try {
-    var saved = localStorage.getItem('veta_crm_clients');
-    if (saved) {
-      clients = JSON.parse(saved);
-      // Migrar campo viejo ultimo_contacto → ultimocontacto
-      clients.forEach(function(c) {
-        if (c['ultimo_contacto'] !== undefined && !c.ultimocontacto) {
-          c.ultimocontacto = c['ultimo_contacto'];
-          delete c['ultimo_contacto'];
-        }
-      });
-    }
-    var camp = localStorage.getItem('veta_crm_campaign');
-    if (camp) document.getElementById('campaign-label').textContent = camp;
-  } catch(e) {}
-}
-
-loadStorage();
-renderTable();
+// ======= INIT =======
+loadCRM(); loadTop();
+renderCRM(); renderTop();
 </script>
 </body>
 </html>
